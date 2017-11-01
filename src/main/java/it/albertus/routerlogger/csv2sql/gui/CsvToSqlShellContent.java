@@ -54,20 +54,31 @@ import it.albertus.util.logging.LoggerFactory;
 
 public class CsvToSqlShellContent implements Multilanguage {
 
+	public static final byte DATABASE_COLUMN_NAME_MIN_LENGTH = 8;
+
 	public static final String TIMESTAMP_BASE_COLUMN_NAME = "timestamp";
 	public static final String RESPONSE_TIME_BASE_COLUMN_NAME = "response_time_ms";
 
 	public static class Defaults {
 		public static final String CSV_FIELD_SEPARATOR = ";";
 		public static final String CSV_DATE_PATTERN = "dd/MM/yyyy HH:mm:ss.SSS";
+		public static final boolean CSV_RESPONSE_TIME = true;
 		public static final String DATABASE_TABLE_NAME = "router_log";
 		public static final String DATABASE_COLUMN_NAME_PREFIX = "rl_";
-		public static final int DATABASE_COLUMN_NAME_MAX_LENGTH = 30;
+		public static final byte DATABASE_COLUMN_NAME_MAX_LENGTH = 30;
 
 		private Defaults() {
 			throw new IllegalAccessError("Constants class");
 		}
 	}
+
+	private static final String CSV_FIELD_SEPARATOR = "csv.field.separator";
+	private static final String CSV_DATE_PATTERN = "csv.date.pattern";
+	private static final String CSV_RESPONSE_TIME = "csv.response.time";
+	private static final String DATABASE_DIRECTORY = "database.directory";
+	private static final String DATABASE_TABLE_NAME = "database.table.name";
+	private static final String DATABASE_COLUMN_NAME_PREFIX = "database.column.name.prefix";
+	private static final String DATABASE_COLUMN_NAME_MAX_LENGTH = "database.column.name.max.length";
 
 	private static final String LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY = "lbl.csv2sql.source.menu.delete.key";
 
@@ -242,7 +253,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 					if (sourceFilesList.getItemCount() > 0) {
 						clearSourceFilesButton.setEnabled(true);
 					}
-					if (destinationDirectoryText != null && !destinationDirectoryText.isDisposed() && destinationDirectoryText.getCharCount() == 0 && sourceFilesList.getItemCount() > 0) {
+					if (destinationDirectoryText != null && !destinationDirectoryText.isDisposed() && (destinationDirectoryText.getCharCount() == 0 || !new File(destinationDirectoryText.getText()).isDirectory()) && sourceFilesList.getItemCount() > 0) {
 						final String lastItem = sourceFilesList.getItem(sourceFilesList.getItemCount() - 1);
 						destinationDirectoryText.setText(new File(lastItem).getParent());
 					}
@@ -341,7 +352,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(csvSeparatorLabel);
 
 		csvSeparatorText = new Text(parent, SWT.BORDER);
-		csvSeparatorText.setText(configuration.getString("csv.field.separator", Defaults.CSV_FIELD_SEPARATOR));
 		csvSeparatorText.setTextLimit(Byte.MAX_VALUE);
 		csvSeparatorText.addModifyListener(textModifyListener);
 		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(csvSeparatorText);
@@ -349,6 +359,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		final ControlValidator<Text> validator = new StringTextValidator(csvSeparatorText, false);
 		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.source.csv.separator"));
 		validators.add(validator);
+		csvSeparatorText.setText(configuration.getString(CSV_FIELD_SEPARATOR, Defaults.CSV_FIELD_SEPARATOR));
 	}
 
 	private void createCsvDatePatternField(final Composite parent) {
@@ -358,7 +369,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(csvTimestampPatternLabel);
 
 		csvTimestampPatternText = new Text(parent, SWT.BORDER);
-		csvTimestampPatternText.setText(Defaults.CSV_DATE_PATTERN);
 		csvTimestampPatternText.setTextLimit(Byte.MAX_VALUE);
 		csvTimestampPatternText.addModifyListener(textModifyListener);
 		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(csvTimestampPatternText);
@@ -380,13 +390,14 @@ public class CsvToSqlShellContent implements Multilanguage {
 		};
 		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.source.csv.date.pattern"));
 		validators.add(validator);
+		csvTimestampPatternText.setText(configuration.getString(CSV_DATE_PATTERN, Defaults.CSV_DATE_PATTERN));
 	}
 
 	private void createCsvResponseTimeFlag(final Composite parent) {
 		csvResponseTimeFlag = new Button(parent, SWT.CHECK);
 		csvResponseTimeFlag.setData("lbl.csv2sql.source.csv.responseTime");
 		csvResponseTimeFlag.setText(Messages.get(csvResponseTimeFlag.getData().toString()));
-		csvResponseTimeFlag.setSelection(true);
+		csvResponseTimeFlag.setSelection(configuration.getBoolean(CSV_RESPONSE_TIME, Defaults.CSV_RESPONSE_TIME));
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(csvResponseTimeFlag);
 	}
 
@@ -410,11 +421,18 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 		destinationDirectoryText = new Text(parent, SWT.BORDER);
 		destinationDirectoryText.setEditable(false);
+		destinationDirectoryText.setText(configuration.getString(DATABASE_DIRECTORY));
 		destinationDirectoryText.addModifyListener(textModifyListener);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(destinationDirectoryText);
 
-		final ControlValidator<Text> validator = new StringTextValidator(destinationDirectoryText, false);
+		final ControlValidator<Text> validator = new StringTextValidator(destinationDirectoryText, false) {
+			@Override
+			public boolean isValid() {
+				return super.isValid() && new File(destinationDirectoryText.getText()).isDirectory();
+			}
+		};
 		validators.add(validator);
+		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.destination.directory"));
 
 		browseDirectoryButton = new Button(parent, SWT.PUSH);
 		browseDirectoryButton.setData("lbl.button.browse");
@@ -440,7 +458,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 		sqlTableNameText = new Text(parent, SWT.BORDER);
 		sqlTableNameText.setTextLimit(Byte.MAX_VALUE);
-		sqlTableNameText.setText(configuration.getString("database.table.name", Defaults.DATABASE_TABLE_NAME));
 		sqlTableNameText.addModifyListener(textModifyListener);
 		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(sqlTableNameText);
 
@@ -452,6 +469,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		};
 		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.destination.table.name"));
 		validators.add(validator);
+		sqlTableNameText.setText(configuration.getString(DATABASE_TABLE_NAME, Defaults.DATABASE_TABLE_NAME));
 	}
 
 	private void createDatabaseColumnNamePrefixField(final Composite parent) {
@@ -462,7 +480,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 		sqlColumnNamesPrefixText = new Text(parent, SWT.BORDER);
 		sqlColumnNamesPrefixText.setTextLimit(Byte.MAX_VALUE);
-		sqlColumnNamesPrefixText.setText(configuration.getString("database.column.name.prefix", Defaults.DATABASE_COLUMN_NAME_PREFIX));
+		sqlColumnNamesPrefixText.setText(configuration.getString(DATABASE_COLUMN_NAME_PREFIX, Defaults.DATABASE_COLUMN_NAME_PREFIX));
 		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(sqlColumnNamesPrefixText);
 	}
 
@@ -473,15 +491,15 @@ public class CsvToSqlShellContent implements Multilanguage {
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(sqlMaxLengthColumnNamesLabel);
 
 		sqlMaxLengthColumnNamesText = new Text(parent, SWT.BORDER);
-		sqlMaxLengthColumnNamesText.setTextLimit(String.valueOf(Byte.MAX_VALUE).length());
-		sqlMaxLengthColumnNamesText.setText(Integer.toString(configuration.getInt("database.column.name.max.length", Defaults.DATABASE_COLUMN_NAME_MAX_LENGTH)));
+		sqlMaxLengthColumnNamesText.setTextLimit(2);
 		sqlMaxLengthColumnNamesText.addModifyListener(textModifyListener);
 		sqlMaxLengthColumnNamesText.addVerifyListener(new ByteVerifyListener(false));
 		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(sqlMaxLengthColumnNamesText);
 
-		final ControlValidator<Text> validator = new ByteTextValidator(sqlMaxLengthColumnNamesText, false, (byte) 8, Byte.MAX_VALUE);
-		new ControlValidatorDecoration(validator, () -> Messages.get("err.preferences.integer.range", 8, Byte.MAX_VALUE));
+		final ControlValidator<Text> validator = new ByteTextValidator(sqlMaxLengthColumnNamesText, false, DATABASE_COLUMN_NAME_MIN_LENGTH, null);
+		new ControlValidatorDecoration(validator, () -> Messages.get("err.preferences.integer.range", 8, 99));
 		validators.add(validator);
+		sqlMaxLengthColumnNamesText.setText(Integer.toString(configuration.getInt(DATABASE_COLUMN_NAME_MAX_LENGTH, Defaults.DATABASE_COLUMN_NAME_MAX_LENGTH)));
 	}
 
 	private void createButtonBar(final Shell shell) {

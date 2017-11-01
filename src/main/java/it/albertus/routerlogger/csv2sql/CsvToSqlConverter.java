@@ -19,11 +19,13 @@ public class CsvToSqlConverter {
 	private static final Logger logger = LoggerFactory.getLogger(CsvToSqlConverter.class);
 
 	public static void main(final String... args) {
-		Display.setAppName(Messages.get("lbl.csv2sql.title"));
-		Display.setAppVersion(Version.getInstance().getNumber());
-		final Display display = Display.getDefault();
-		final Shell shell = new Shell(display, SWT.RESIZE | SWT.MIN);
+		Display display = null;
+		Shell shell = null;
 		try {
+			Display.setAppName(Messages.get("lbl.csv2sql.title"));
+			Display.setAppVersion(Version.getInstance().getNumber());
+			display = Display.getDefault();
+			shell = new Shell(display, SWT.RESIZE | SWT.MIN);
 			new CsvToSqlGui(shell).open();
 			while (!shell.isDisposed()) {
 				if (!display.isDisposed() && !display.readAndDispatch()) {
@@ -33,12 +35,14 @@ public class CsvToSqlConverter {
 		}
 		catch (final Exception e) {
 			logger.log(Level.SEVERE, e.toString(), e);
-			if (!display.isDisposed() && !shell.isDisposed()) {
+			if (display != null && shell != null && !display.isDisposed() && !shell.isDisposed()) {
 				EnhancedErrorDialog.openError(shell, shell.getText(), e.toString(), IStatus.ERROR, e, shell.getDisplay().getSystemImage(SWT.ICON_ERROR));
 			}
 		}
 		finally {
-			display.dispose();
+			if (display != null) {
+				display.dispose();
+			}
 		}
 	}
 
