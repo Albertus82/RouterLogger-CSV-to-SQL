@@ -118,7 +118,7 @@ public class MenuBar implements Multilanguage {
 			helpAboutItem.addSelectionListener(new AboutListener(gui));
 		}
 
-		final ArmMenuListener helpMenuListener = () -> helpSystemInfoItem.setEnabled(SystemInformationDialog.isAvailable());
+		final ArmMenuListener helpMenuListener = event -> helpSystemInfoItem.setEnabled(SystemInformationDialog.isAvailable());
 		helpMenu.addMenuListener(helpMenuListener);
 		helpMenuHeader.addArmListener(helpMenuListener);
 
