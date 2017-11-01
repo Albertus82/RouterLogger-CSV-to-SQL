@@ -90,7 +90,7 @@ public enum Preference implements IPreference {
 
 	@Override
 	public Preference[] getChildren() {
-		return Arrays.stream(values()).parallel().filter(item -> this.equals(item.getParent())).toArray(Preference[]::new);
+		return Arrays.stream(values()).parallel().filter(item -> equals(item.getParent())).toArray(Preference[]::new);
 	}
 
 	@Override

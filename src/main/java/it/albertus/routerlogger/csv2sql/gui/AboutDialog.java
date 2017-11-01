@@ -7,7 +7,6 @@ import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
-import org.eclipse.swt.graphics.GC;
 import org.eclipse.swt.layout.GridLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Dialog;
@@ -15,6 +14,7 @@ import org.eclipse.swt.widgets.Label;
 import org.eclipse.swt.widgets.Link;
 import org.eclipse.swt.widgets.Shell;
 
+import it.albertus.jface.SwtUtils;
 import it.albertus.jface.listener.LinkSelectionListener;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
 import it.albertus.util.Version;
@@ -25,7 +25,7 @@ public class AboutDialog extends Dialog {
 		this(parent, SWT.SHEET); // SWT.DIALOG_TRIM | SWT.APPLICATION_MODAL
 	}
 
-	public AboutDialog(final Shell parent, final int style) {
+	private AboutDialog(final Shell parent, final int style) {
 		super(parent, style);
 		this.setText(Messages.get("lbl.about.title", Messages.get("lbl.csv2sql.title")));
 	}
@@ -59,16 +59,13 @@ public class AboutDialog extends Dialog {
 		appInfo.addSelectionListener(linkSelectionListener);
 
 		final Link iconInfo = new Link(shell, SWT.WRAP);
-		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.CENTER).grab(false, true).applyTo(iconInfo);
+		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.TOP).grab(false, true).applyTo(iconInfo);
 		iconInfo.setText(Messages.get("lbl.about.icon", buildAnchor(Messages.get("lbl.about.icon.url"), Messages.get("lbl.about.icon.author"))));
 		iconInfo.addSelectionListener(linkSelectionListener);
 
 		final Button okButton = new Button(shell, SWT.PUSH);
 		okButton.setText(Messages.get("lbl.button.ok"));
-		final GC gc = new GC(okButton);
-		gc.setFont(okButton.getFont());
-		final int buttonWidth = org.eclipse.jface.dialogs.Dialog.convertHorizontalDLUsToPixels(gc.getFontMetrics(), IDialogConstants.BUTTON_WIDTH);
-		gc.dispose();
+		final int buttonWidth = SwtUtils.convertHorizontalDLUsToPixels(okButton, IDialogConstants.BUTTON_WIDTH);
 		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).grab(true, false).span(2, 1).minSize(buttonWidth, SWT.DEFAULT).applyTo(okButton);
 		okButton.setFocus();
 		okButton.addSelectionListener(new SelectionAdapter() {
