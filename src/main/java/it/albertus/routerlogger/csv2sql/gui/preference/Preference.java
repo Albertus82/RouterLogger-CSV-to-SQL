@@ -22,10 +22,10 @@ import it.albertus.jface.preference.field.EnhancedIntegerFieldEditor;
 import it.albertus.jface.preference.field.EnhancedStringFieldEditor;
 import it.albertus.jface.preference.field.ScaleIntegerFieldEditor;
 import it.albertus.jface.preference.page.IPageDefinition;
+import it.albertus.jface.preference.page.LoggingPreferencePage;
 import it.albertus.routerlogger.csv2sql.engine.CsvToSqlConfig;
 import it.albertus.routerlogger.csv2sql.gui.CsvToSqlShellContent;
 import it.albertus.routerlogger.csv2sql.gui.preference.page.GeneralPreferencePage;
-import it.albertus.routerlogger.csv2sql.gui.preference.page.LoggingPreferencePage;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
 import it.albertus.util.LoggingConfig;
 
