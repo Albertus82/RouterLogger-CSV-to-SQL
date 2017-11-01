@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE project>
-<project name="csv2sql" default="all" xmlns:jacoco="antlib:org.jacoco.ant">
+<project name="RouterLoggerCsv2Sql" default="all" xmlns:jacoco="antlib:org.jacoco.ant">
 
 	<property environment="env" />
 	<property name="env.JRE8_HOME" value="${env.JAVA_HOME}/../jdk1.8.0_151/jre" />
@@ -80,14 +80,14 @@
 		</copy>
 
 		<!-- Prepare MANIFEST.MF files -->
-		<manifestclasspath property="classpath.win32-win32-x86" jarfile="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${ant.project.name}.jar" maxParentLevels="0">
+		<manifestclasspath property="classpath.win32-win32-x86" jarfile="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${windows.jar.name}.jar" maxParentLevels="0">
 			<classpath>
 				<fileset dir="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${dependencies.directory}">
 					<include name="*.jar" />
 				</fileset>
 			</classpath>
 		</manifestclasspath>
-		<manifestclasspath property="classpath.win32-win32-x86_64" jarfile="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${ant.project.name}.jar" maxParentLevels="0">
+		<manifestclasspath property="classpath.win32-win32-x86_64" jarfile="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${windows.jar.name}.jar" maxParentLevels="0">
 			<classpath>
 				<fileset dir="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${dependencies.directory}">
 					<include name="*.jar" />
@@ -213,7 +213,7 @@
 	</target>
 
 	<target name="jar" depends="compile, resources, config, scripts, docs, icons, lib">
-		<jar destfile="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${ant.project.name}.jar" basedir="${build.outputDirectory}" level="9">
+		<jar destfile="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${windows.jar.name}.jar" basedir="${build.outputDirectory}" level="9">
 			<manifest>
 				<attribute name="Main-Class" value="${build.jar.archive.manifest.mainClass}" />
 				<attribute name="Class-Path" value="${classpath.win32-win32-x86}" />
@@ -224,7 +224,7 @@
 			</manifest>
 			<metainf refid="docs" />
 		</jar>
-		<jar destfile="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${ant.project.name}.jar" basedir="${build.outputDirectory}" level="9">
+		<jar destfile="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${windows.jar.name}.jar" basedir="${build.outputDirectory}" level="9">
 			<manifest>
 				<attribute name="Main-Class" value="${build.jar.archive.manifest.mainClass}" />
 				<attribute name="Class-Path" value="${classpath.win32-win32-x86_64}" />
@@ -389,10 +389,10 @@
 		<chmod perm="+x" file="${launch4j.bindir}/windres" failonerror="false" failifexecutionfails="false" ignoremissing="true" />
 
 		<launch4j bindir="${launch4j.bindir}">
-			<config outfile="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${ant.project.name}.exe" jarpath="${ant.project.name}.jar" headertype="${launch4j.headerType}" dontwrapjar="${launch4j.dontWrapJar}" stayalive="${launch4j.stayAlive}" restartoncrash="${launch4j.restartOnCrash}" priority="${launch4j.priority}" errtitle="${launch4j.errTitle}" chdir="." icon="${icons.directory}/main.ico">
+			<config outfile="${build.assemblyDirectory}/dist/win32-win32-x86/${artifactId}/${windows.exe.name}.exe" jarpath="${windows.jar.name}.jar" headertype="${launch4j.headerType}" dontwrapjar="${launch4j.dontWrapJar}" stayalive="${launch4j.stayAlive}" restartoncrash="${launch4j.restartOnCrash}" priority="${launch4j.priority}" errtitle="${launch4j.errTitle}" chdir="." icon="${icons.directory}/main.ico">
 				<singleInstance mutexname="${build.jar.archive.manifest.mainClass}" windowtitle="${name}" />
 				<jre runtimebits="32" minversion="${build.compiler.target}.0" jdkpreference="${launch4j.jdkPreference}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" />
-				<versionInfo fileversion="${version.number}.0" txtfileversion="${version.number}" filedescription="${name}" copyright="${name}" productversion="${version.number}.0" txtproductversion="${version.number}" productname="${name}" internalname="${ant.project.name}" originalfilename="${ant.project.name}.exe" />
+				<versionInfo fileversion="${version.number}.0" txtfileversion="${version.number}" filedescription="${name}" copyright="${name}" productversion="${version.number}.0" txtproductversion="${version.number}" productname="${name}" internalname="${windows.exe.name}" originalfilename="${windows.exe.name}.exe" />
 			</config>
 		</launch4j>
 		<echo file="${build.assemblyDirectory}/dist/win32-win32-x86/setup.iss">
@@ -407,7 +407,7 @@
 			AppMutex=${build.jar.archive.manifest.mainClass}
 			DefaultDirName={pf}\${name}
 			DefaultGroupName=${name}
-			UninstallDisplayIcon={app}\${ant.project.name}.exe
+			UninstallDisplayIcon={app}\${windows.exe.name}.exe
 			Compression=lzma2
 			SolidCompression=yes
 			CloseApplications=no
@@ -418,17 +418,15 @@
 			Name: "Italiano"; MessagesFile: "compiler:Languages\Italian.isl"; LicenseFile: "${artifactId}\LICENSE.txt"
 
 			[Run]
-			Filename: "{app}\${ant.project.name}.exe"; Description: "{cm:LaunchProgram,${name}}"; Flags: nowait postinstall skipifsilent
+			Filename: "{app}\${windows.exe.name}.exe"; Description: "{cm:LaunchProgram,${name}}"; Flags: nowait postinstall skipifsilent
 
 			[Tasks]
 			Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-			Name: "startupicon"; Description: "{cm:AutoStartProgram,${name}}"; GroupDescription: "{cm:AutoStartProgramGroupDescription}"; Flags: unchecked
 
 			[Icons]
-			Name: "{group}\${name}"; Filename: "{app}\${ant.project.name}.exe"
+			Name: "{group}\${name}"; Filename: "{app}\${windows.exe.name}.exe"
 			Name: "{group}\{cm:UninstallProgram,${name}}"; Filename: "{uninstallexe}"
-			Name: "{userdesktop}\${name}"; Filename: "{app}\${ant.project.name}.exe"; Tasks: desktopicon
-			Name: "{userstartup}\${name}"; Filename: "{app}\${ant.project.name}.exe"; Tasks: startupicon
+			Name: "{userdesktop}\${name}"; Filename: "{app}\${windows.exe.name}.exe"; Tasks: desktopicon
 
 			[Files]
 			Source: "${artifactId}\*"; Excludes: "*.cfg,${dependencies.directory}\*.log"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
@@ -480,10 +478,10 @@
 		</exec>
 
 		<launch4j bindir="${launch4j.bindir}">
-			<config outfile="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${ant.project.name}.exe" jarpath="${ant.project.name}.jar" headertype="${launch4j.headerType}" dontwrapjar="${launch4j.dontWrapJar}" stayalive="${launch4j.stayAlive}" restartoncrash="${launch4j.restartOnCrash}" priority="${launch4j.priority}" errtitle="${launch4j.errTitle}" chdir="." icon="${icons.directory}/main.ico">
+			<config outfile="${build.assemblyDirectory}/dist/win32-win32-x86_64/${artifactId}/${windows.exe.name}.exe" jarpath="${windows.jar.name}.jar" headertype="${launch4j.headerType}" dontwrapjar="${launch4j.dontWrapJar}" stayalive="${launch4j.stayAlive}" restartoncrash="${launch4j.restartOnCrash}" priority="${launch4j.priority}" errtitle="${launch4j.errTitle}" chdir="." icon="${icons.directory}/main.ico">
 				<singleInstance mutexname="${build.jar.archive.manifest.mainClass}" windowtitle="${name}" />
 				<jre runtimebits="64" minversion="${build.compiler.target}.0" jdkpreference="${launch4j.jdkPreference}" initialheapsize="${vm.initialHeapSize}" maxheapsize="${vm.maxHeapSize}" />
-				<versionInfo fileversion="${version.number}.0" txtfileversion="${version.number}" filedescription="${name}" copyright="${name}" productversion="${version.number}.0" txtproductversion="${version.number}" productname="${name}" internalname="${ant.project.name}" originalfilename="${ant.project.name}.exe" />
+				<versionInfo fileversion="${version.number}.0" txtfileversion="${version.number}" filedescription="${name}" copyright="${name}" productversion="${version.number}.0" txtproductversion="${version.number}" productname="${name}" internalname="${windows.exe.name}" originalfilename="${windows.exe.name}.exe" />
 			</config>
 		</launch4j>
 		<echo file="${build.assemblyDirectory}/dist/win32-win32-x86_64/setup.iss">
@@ -498,7 +496,7 @@
 			AppMutex=${build.jar.archive.manifest.mainClass}
 			DefaultDirName={pf}\${name}
 			DefaultGroupName=${name}
-			UninstallDisplayIcon={app}\${ant.project.name}.exe
+			UninstallDisplayIcon={app}\${windows.exe.name}.exe
 			Compression=lzma2
 			SolidCompression=yes
 			CloseApplications=no
@@ -510,17 +508,15 @@
 			Name: "Italiano"; MessagesFile: "compiler:Languages\Italian.isl"; LicenseFile: "${artifactId}\LICENSE.txt"
 
 			[Run]
-			Filename: "{app}\${ant.project.name}.exe"; Description: "{cm:LaunchProgram,${name}}"; Flags: nowait postinstall skipifsilent
+			Filename: "{app}\${windows.exe.name}.exe"; Description: "{cm:LaunchProgram,${name}}"; Flags: nowait postinstall skipifsilent
 
 			[Tasks]
 			Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
-			Name: "startupicon"; Description: "{cm:AutoStartProgram,${name}}"; GroupDescription: "{cm:AutoStartProgramGroupDescription}"; Flags: unchecked
 
 			[Icons]
-			Name: "{group}\${name}"; Filename: "{app}\${ant.project.name}.exe"
+			Name: "{group}\${name}"; Filename: "{app}\${windows.exe.name}.exe"
 			Name: "{group}\{cm:UninstallProgram,${name}}"; Filename: "{uninstallexe}"
-			Name: "{userdesktop}\${name}"; Filename: "{app}\${ant.project.name}.exe"; Tasks: desktopicon
-			Name: "{userstartup}\${name}"; Filename: "{app}\${ant.project.name}.exe"; Tasks: startupicon
+			Name: "{userdesktop}\${name}"; Filename: "{app}\${windows.exe.name}.exe"; Tasks: desktopicon
 
 			[Files]
 			Source: "${artifactId}\*"; Excludes: "*.cfg,${dependencies.directory}\*.log"; DestDir: "{app}"; Flags: ignoreversion recursesubdirs
