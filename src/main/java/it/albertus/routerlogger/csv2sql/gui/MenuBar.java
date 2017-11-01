@@ -11,12 +11,12 @@ import org.eclipse.swt.widgets.Menu;
 import org.eclipse.swt.widgets.MenuItem;
 import org.eclipse.swt.widgets.Shell;
 
+import it.albertus.jface.Multilanguage;
 import it.albertus.jface.cocoa.CocoaEnhancerException;
 import it.albertus.jface.cocoa.CocoaUIEnhancer;
 import it.albertus.jface.sysinfo.SystemInformationDialog;
-import it.albertus.routerlogger.common.gui.MultilanguageGui;
-import it.albertus.routerlogger.common.gui.listener.ArmMenuListener;
 import it.albertus.routerlogger.csv2sql.gui.listener.AboutListener;
+import it.albertus.routerlogger.csv2sql.gui.listener.ArmMenuListener;
 import it.albertus.routerlogger.csv2sql.gui.listener.CloseListener;
 import it.albertus.routerlogger.csv2sql.gui.listener.PreferencesListener;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
@@ -29,7 +29,7 @@ import it.albertus.util.logging.LoggerFactory;
  * combinazioni di tasti, gli acceleratori non funzioneranno e le relative
  * combinazioni di tasti saranno ignorate.
  */
-public class MenuBar implements MultilanguageGui {
+public class MenuBar implements Multilanguage {
 
 	private static final String LBL_MENU_HEADER_FILE = "lbl.menu.header.file";
 	private static final String LBL_MENU_ITEM_EXIT = "lbl.menu.item.exit";

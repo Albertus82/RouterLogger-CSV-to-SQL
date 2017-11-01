@@ -11,8 +11,8 @@ import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
 import it.albertus.jface.EnhancedErrorDialog;
+import it.albertus.jface.Multilanguage;
 import it.albertus.jface.preference.Preferences;
-import it.albertus.routerlogger.common.gui.MultilanguageGui;
 import it.albertus.routerlogger.csv2sql.engine.CsvToSqlConfig;
 import it.albertus.routerlogger.csv2sql.gui.Images;
 import it.albertus.routerlogger.csv2sql.gui.preference.Preference;
@@ -28,9 +28,9 @@ public class PreferencesListener extends SelectionAdapter implements Listener {
 
 	private static final Configuration configuration = CsvToSqlConfig.getInstance();
 
-	private final MultilanguageGui gui;
+	private final Multilanguage gui;
 
-	public PreferencesListener(final MultilanguageGui gui) {
+	public PreferencesListener(final Multilanguage gui) {
 		this.gui = gui;
 	}
 

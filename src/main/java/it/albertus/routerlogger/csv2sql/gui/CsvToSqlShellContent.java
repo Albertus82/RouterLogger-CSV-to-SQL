@@ -38,6 +38,7 @@ import org.eclipse.swt.widgets.Shell;
 import org.eclipse.swt.widgets.Text;
 
 import it.albertus.jface.EnhancedErrorDialog;
+import it.albertus.jface.Multilanguage;
 import it.albertus.jface.SwtUtils;
 import it.albertus.jface.decoration.ControlValidatorDecoration;
 import it.albertus.jface.listener.ByteVerifyListener;
@@ -45,14 +46,13 @@ import it.albertus.jface.validation.ByteTextValidator;
 import it.albertus.jface.validation.ControlValidator;
 import it.albertus.jface.validation.StringTextValidator;
 import it.albertus.jface.validation.Validator;
-import it.albertus.routerlogger.common.gui.MultilanguageGui;
 import it.albertus.routerlogger.csv2sql.engine.CsvToSqlConfig;
 import it.albertus.routerlogger.csv2sql.engine.CsvToSqlEngine;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
 import it.albertus.util.Configuration;
 import it.albertus.util.logging.LoggerFactory;
 
-public class CsvToSqlShellContent implements MultilanguageGui {
+public class CsvToSqlShellContent implements Multilanguage {
 
 	public static final String TIMESTAMP_BASE_COLUMN_NAME = "timestamp";
 	public static final String RESPONSE_TIME_BASE_COLUMN_NAME = "response_time_ms";
