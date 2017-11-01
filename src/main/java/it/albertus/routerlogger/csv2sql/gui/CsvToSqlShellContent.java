@@ -230,7 +230,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		addSourceFileButton.setData("lbl.csv2sql.source.add");
 		addSourceFileButton.setText(Messages.get(addSourceFileButton.getData().toString()));
 		final int addButtonWidth = SwtUtils.convertHorizontalDLUsToPixels(addSourceFileButton, IDialogConstants.BUTTON_WIDTH);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.TOP).hint(addButtonWidth, SWT.DEFAULT).applyTo(addSourceFileButton);
+		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.TOP).hint(addButtonWidth, SWT.DEFAULT).applyTo(addSourceFileButton);
 
 		addSourceFileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -258,7 +258,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		removeSourceFileButton.setData("lbl.csv2sql.source.remove");
 		removeSourceFileButton.setText(Messages.get(removeSourceFileButton.getData().toString()));
 		final int removeButtonWidth = SwtUtils.convertHorizontalDLUsToPixels(removeSourceFileButton, IDialogConstants.BUTTON_WIDTH);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.TOP).hint(removeButtonWidth, SWT.DEFAULT).applyTo(removeSourceFileButton);
+		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.TOP).hint(removeButtonWidth, SWT.DEFAULT).applyTo(removeSourceFileButton);
 
 		removeSourceFileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -274,7 +274,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		clearSourceFilesButton.setData("lbl.csv2sql.source.clear");
 		clearSourceFilesButton.setText(Messages.get(clearSourceFilesButton.getData().toString()));
 		final int clearButtonWidth = SwtUtils.convertHorizontalDLUsToPixels(clearSourceFilesButton, IDialogConstants.BUTTON_WIDTH);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.TOP).hint(clearButtonWidth, SWT.DEFAULT).applyTo(clearSourceFilesButton);
+		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.TOP).hint(clearButtonWidth, SWT.DEFAULT).applyTo(clearSourceFilesButton);
 
 		clearSourceFilesButton.addSelectionListener(new SelectionAdapter() {
 			@Override
@@ -420,7 +420,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		browseDirectoryButton.setData("lbl.button.browse");
 		browseDirectoryButton.setText(Messages.get(browseDirectoryButton.getData().toString()));
 		final int buttonWidth = SwtUtils.convertHorizontalDLUsToPixels(browseDirectoryButton, IDialogConstants.BUTTON_WIDTH);
-		GridDataFactory.swtDefaults().align(SWT.BEGINNING, SWT.TOP).hint(buttonWidth, SWT.DEFAULT).applyTo(browseDirectoryButton);
+		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.TOP).hint(buttonWidth, SWT.DEFAULT).applyTo(browseDirectoryButton);
 		browseDirectoryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
