@@ -11,6 +11,7 @@ import it.albertus.routerlogger.csv2sql.resources.Messages;
 public enum PageDefinition implements IPageDefinition {
 
 	GENERAL(new PageDefinitionDetailsBuilder().pageClass(GeneralPreferencePage.class).build()),
+	DEFAULTS,
 	LOGGING(new PageDefinitionDetailsBuilder().pageClass(LoggingPreferencePage.class).build());
 
 	private static final String LABEL_KEY_PREFIX = "lbl.preferences.";

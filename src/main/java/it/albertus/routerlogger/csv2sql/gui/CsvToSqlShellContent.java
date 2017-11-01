@@ -1,5 +1,7 @@
 package it.albertus.routerlogger.csv2sql.gui;
 
+import static it.albertus.jface.decoration.ControlValidatorDecoration.DEFAULT_STYLE;
+
 import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
@@ -13,6 +15,7 @@ import java.util.logging.Logger;
 import org.eclipse.core.runtime.IStatus;
 import org.eclipse.jface.dialogs.IDialogConstants;
 import org.eclipse.jface.dialogs.ProgressMonitorDialog;
+import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.swt.SWT;
@@ -357,7 +360,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		GridDataFactory.fillDefaults().span(2, 1).grab(true, false).applyTo(csvSeparatorText);
 
 		final ControlValidator<Text> validator = new StringTextValidator(csvSeparatorText, false);
-		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.source.csv.separator"));
+		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.source.csv.separator"), DEFAULT_STYLE, FieldDecorationRegistry.DEC_REQUIRED);
 		validators.add(validator);
 		csvSeparatorText.setText(configuration.getString(CSV_FIELD_SEPARATOR, Defaults.CSV_FIELD_SEPARATOR));
 	}
@@ -467,7 +470,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 				return super.isValid() && !sqlTableNameText.getText().trim().isEmpty();
 			}
 		};
-		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.destination.table.name"));
+		new ControlValidatorDecoration(validator, () -> Messages.get("err.csv2sql.destination.table.name"), DEFAULT_STYLE, FieldDecorationRegistry.DEC_REQUIRED);
 		validators.add(validator);
 		sqlTableNameText.setText(configuration.getString(DATABASE_TABLE_NAME, Defaults.DATABASE_TABLE_NAME));
 	}
