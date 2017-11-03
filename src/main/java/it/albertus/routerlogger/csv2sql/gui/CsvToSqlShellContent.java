@@ -424,7 +424,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 		destinationDirectoryText = new Text(parent, SWT.BORDER);
 		destinationDirectoryText.setEditable(false);
-		destinationDirectoryText.setText(configuration.getString(DATABASE_DIRECTORY));
+		destinationDirectoryText.setText(configuration.getString(DATABASE_DIRECTORY, ""));
 		destinationDirectoryText.addModifyListener(textModifyListener);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(destinationDirectoryText);
 
