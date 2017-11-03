@@ -39,7 +39,7 @@ public class CsvToSqlConfig extends LoggingConfig implements LanguageConfig {
 	}
 
 	private CsvToSqlConfig() throws IOException {
-		super(DIRECTORY_NAME + File.separator + CFG_FILE_NAME, true, DEFAULT_LOGGING_FILES_PATH, LOG_FILE_NAME_PATTERN);
+		super(DIRECTORY_NAME + File.separator + CFG_FILE_NAME, true);
 		init();
 	}
 
@@ -51,8 +51,40 @@ public class CsvToSqlConfig extends LoggingConfig implements LanguageConfig {
 
 	@Override
 	public void updateLanguage() {
-		final String language = getString(CFG_KEY_LANGUAGE, Messages.DEFAULT_LANGUAGE);
+		final String language = getString("language", Messages.DEFAULT_LANGUAGE);
 		Messages.setLanguage(language);
+	}
+
+	@Override
+	protected boolean isFileHandlerEnabled() {
+
+		return super.isFileHandlerEnabled();
+	}
+
+	@Override
+	protected String getFileHandlerPattern() {
+		return getString("logging.files.path", DEFAULT_LOGGING_FILES_PATH) + File.separator + LOG_FILE_NAME_PATTERN;
+	}
+
+	@Override
+	protected int getFileHandlerLimit() {
+		final Integer limit = getInt("logging.files.limit");
+		if (limit != null) {
+			return limit * 1024;
+		}
+		else {
+			return super.getFileHandlerLimit();
+		}
+	}
+
+	@Override
+	protected int getFileHandlerCount() {
+		return getInt("logging.files.count", super.getFileHandlerCount());
+	}
+
+	@Override
+	protected String getLoggingLevel() {
+		return getString("logging.level", super.getLoggingLevel());
 	}
 
 }
