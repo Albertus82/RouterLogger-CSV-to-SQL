@@ -13,7 +13,7 @@ import it.albertus.util.logging.LoggerFactory;
 
 public class CsvToSqlConfig extends LoggingConfig implements LanguageConfig {
 
-	private static final String DIRECTORY_NAME = "RouterLogger CSV2SQL";
+	private static final String DIRECTORY_NAME = "RouterLogger" + File.separator + "CSV2SQL";
 
 	public static final String DEFAULT_LOGGING_FILES_PATH = getOsSpecificLocalAppDataDir() + File.separator + DIRECTORY_NAME;
 
@@ -57,8 +57,7 @@ public class CsvToSqlConfig extends LoggingConfig implements LanguageConfig {
 
 	@Override
 	protected boolean isFileHandlerEnabled() {
-
-		return super.isFileHandlerEnabled();
+		return getBoolean("logging.files.enabled", super.isFileHandlerEnabled());
 	}
 
 	@Override
