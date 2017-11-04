@@ -405,7 +405,7 @@
 			AppSupportURL=${innosetup.AppSupportURL}
 			AppUpdatesURL=${innosetup.AppUpdatesURL}
 			AppMutex=${build.jar.archive.manifest.mainClass}
-			DefaultDirName={pf}\${name}
+			DefaultDirName={pf}\RouterLogger\CSV2SQL
 			DefaultGroupName=${name}
 			UninstallDisplayIcon={app}\${windows.exe.name}.exe
 			Compression=lzma2
@@ -494,7 +494,7 @@
 			AppSupportURL=${innosetup.AppSupportURL}
 			AppUpdatesURL=${innosetup.AppUpdatesURL}
 			AppMutex=${build.jar.archive.manifest.mainClass}
-			DefaultDirName={pf}\${name}
+			DefaultDirName={pf}\RouterLogger\CSV2SQL
 			DefaultGroupName=${name}
 			UninstallDisplayIcon={app}\${windows.exe.name}.exe
 			Compression=lzma2
