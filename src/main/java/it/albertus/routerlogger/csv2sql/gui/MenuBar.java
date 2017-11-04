@@ -31,6 +31,7 @@ import it.albertus.util.logging.LoggerFactory;
  */
 public class MenuBar implements Multilanguage {
 
+	private static final String LBL_CSV2SQL_TITLE = "lbl.csv2sql.title";
 	private static final String LBL_MENU_HEADER_FILE = "lbl.menu.header.file";
 	private static final String LBL_MENU_ITEM_EXIT = "lbl.menu.item.exit";
 	private static final String LBL_MENU_HEADER_TOOLS = "lbl.menu.header.tools";
@@ -114,7 +115,7 @@ public class MenuBar implements Multilanguage {
 			new MenuItem(helpMenu, SWT.SEPARATOR);
 
 			helpAboutItem = new MenuItem(helpMenu, SWT.PUSH);
-			helpAboutItem.setText(Messages.get(LBL_MENU_ITEM_ABOUT));
+			helpAboutItem.setText(Messages.get(LBL_MENU_ITEM_ABOUT, Messages.get(LBL_CSV2SQL_TITLE)));
 			helpAboutItem.addSelectionListener(new AboutListener(gui));
 		}
 
