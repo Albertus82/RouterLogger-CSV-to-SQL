@@ -588,7 +588,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 			final CsvToSqlEngine converter = new CsvToSqlEngine(csvSeparator, csvTimestampPattern, sqlTableName, sqlColumnNamesPrefix, sqlTimestampColumnName, sqlResponseTimeColumnName, sqlMaxLengthColumnNames);
 
-			final CsvToSqlRunnable runnable = new CsvToSqlRunnable(converter, sourceFilesList.getItems(), destinationDirectoryText.getText());
+			final CsvToSqlRunnable runnable = new CsvToSqlRunnable(converter, sourceFilesList.getItems(), destinationDirectoryText.getText().trim());
 
 			ProgressMonitorDialog.setDefaultImages(shell.getImages());
 			final IRunnableContext dialog = new ProgressMonitorDialog(shell) {
