@@ -6,6 +6,7 @@ import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.io.LineNumberReader;
+import java.nio.file.Files;
 import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -65,11 +66,12 @@ public class CsvToSqlEngine {
 		}
 		finally {
 			if (deleteIncompleteFile) {
-				if (destinationFile.delete()) {
+				try {
+					Files.delete(destinationFile.toPath());
 					logger.log(Level.INFO, Messages.get("msg.csv2sql.interrupted.delete.success"), destinationFile);
 				}
-				else {
-					logger.log(Level.WARNING, Messages.get("msg.csv2sql.interrupted.delete.failure"), destinationFile);
+				catch (final IOException e) {
+					logger.log(Level.WARNING, Messages.get("msg.csv2sql.interrupted.delete.failure", destinationFile), e);
 				}
 			}
 		}
