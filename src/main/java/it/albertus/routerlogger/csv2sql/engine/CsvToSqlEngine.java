@@ -11,14 +11,19 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import it.albertus.routerlogger.csv2sql.resources.Messages;
+import it.albertus.util.logging.LoggerFactory;
 import it.albertus.util.sql.SqlUtils;
 
 public class CsvToSqlEngine {
 
 	protected static final String CSV_FILE_EXTENSION = ".csv";
 	protected static final String SQL_FILE_EXTENSION = ".sql";
+
+	private final Logger logger = LoggerFactory.getLogger(CsvToSqlEngine.class);
 
 	private final DateFormat ansiSqlTimestampFormat = new SimpleDateFormat("yyyy-M-dd HH:mm:ss.SSS"); // '1998-3-24 04:21:23.456'
 
@@ -47,13 +52,30 @@ public class CsvToSqlEngine {
 		this.csvSeparator = csvSeparator;
 	}
 
-	public void convert(final File csvFile, final String destDir) throws IOException {
-		try (final FileReader fr = new FileReader(csvFile); final LineNumberReader lnr = new LineNumberReader(fr); final FileWriter fw = new FileWriter(getDestinationFile(csvFile, destDir)); final BufferedWriter bw = new BufferedWriter(fw)) {
-			convert(csvFile.getPath(), lnr, bw);
+	public void convert(final File csvFile, final String destDir, final CancellationStatus status) throws IOException, InterruptedException {
+		boolean deleteIncompleteFile = false;
+		final File destinationFile = getDestinationFile(csvFile, destDir);
+		try (final FileReader fr = new FileReader(csvFile); final LineNumberReader lnr = new LineNumberReader(fr); final FileWriter fw = new FileWriter(destinationFile); final BufferedWriter bw = new BufferedWriter(fw)) {
+			convert(csvFile.getPath(), lnr, bw, status);
+			logger.log(Level.INFO, Messages.get("msg.csv2sql.conversion.success"), csvFile);
+		}
+		catch (final InterruptedException e) {
+			deleteIncompleteFile = true;
+			throw e;
+		}
+		finally {
+			if (deleteIncompleteFile) {
+				if (destinationFile.delete()) {
+					logger.log(Level.INFO, Messages.get("msg.csv2sql.interrupted.delete.success"), destinationFile);
+				}
+				else {
+					logger.log(Level.WARNING, Messages.get("msg.csv2sql.interrupted.delete.failure"), destinationFile);
+				}
+			}
 		}
 	}
 
-	void convert(final String sourceFileName, final LineNumberReader reader, final BufferedWriter writer) throws IOException {
+	void convert(final String sourceFileName, final LineNumberReader reader, final BufferedWriter writer, final CancellationStatus status) throws IOException, InterruptedException {
 		final String firstLine = reader.readLine();
 		if (firstLine != null) {
 			final String[] csvColumnNames = firstLine.trim().split(csvSeparator);
@@ -68,6 +90,9 @@ public class CsvToSqlEngine {
 					catch (final Exception e) {
 						throw new IOException(Messages.get("err.csv2sql.runnable", sourceFileName, reader.getLineNumber()), e);
 					}
+				}
+				if (status != null && status.isCanceled()) {
+					throw new InterruptedException();
 				}
 			}
 			writer.write("COMMIT;");

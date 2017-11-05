@@ -21,14 +21,14 @@ import it.albertus.util.IOUtils;
 public class CsvToSqlEngineTest {
 
 	@Test
-	public void testConvertUsingStreams() throws IOException {
+	public void testConvertUsingStreams() throws IOException, InterruptedException {
 		final CsvToSqlEngine converter = new CsvToSqlEngine(";", "dd/MM/yyyy HH:mm:ss.SSS", "my_table", "prefix_", "timestamp", "response_time_ms", 20);
 		final String converted = convert(converter, "test_ok.csv");
 		verify(converted, "test_ok.sql");
 	}
 
 	@Test
-	public void testConvertException() {
+	public void testConvertException() throws InterruptedException {
 		final CsvToSqlEngine converter = new CsvToSqlEngine(";", "yyyy/MM/dd", "my_table", "prefix_", "timestamp", "response_time_ms", 20);
 		try {
 			convert(converter, "test_ok.csv");
@@ -60,13 +60,13 @@ public class CsvToSqlEngineTest {
 	}
 
 	@Test
-	public void testWithoutResponseTime() throws IOException {
+	public void testWithoutResponseTime() throws IOException, InterruptedException {
 		final CsvToSqlEngine converter = new CsvToSqlEngine(";", "dd/MM/yyyy HH:mm:ss.SSS", "router_logs_2015", "", "timestamp", null, 30);
 		final String converted = convert(converter, "test_wo_responsetime.csv");
 		verify(converted, "test_wo_responsetime.sql");
 	}
 
-	private String convert(final CsvToSqlEngine converter, final String csvFileName) throws IOException {
+	private String convert(final CsvToSqlEngine converter, final String csvFileName) throws IOException, InterruptedException {
 		InputStream r1 = null;
 		InputStreamReader r2 = null;
 		LineNumberReader r3 = null;
@@ -82,7 +82,7 @@ public class CsvToSqlEngineTest {
 			w1 = new StringWriter();
 			w2 = new BufferedWriter(w1);
 
-			converter.convert(csvFileName, r3, w2);
+			converter.convert(csvFileName, r3, w2, () -> false);
 		}
 		finally {
 			IOUtils.closeQuietly(w2, w1, r3, r2, r1);

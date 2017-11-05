@@ -30,7 +30,7 @@ public class CsvToSqlRunnable implements IRunnableWithProgress {
 			final String sourceFile = sourceFiles[i];
 			monitor.subTask(Messages.get("lbl.csv2sql.runnable.subtask.name", i + 1, sourceFiles.length, sourceFile));
 			try {
-				converter.convert(new File(sourceFile), destinationPath);
+				converter.convert(new File(sourceFile), destinationPath, monitor::isCanceled);
 			}
 			catch (final IOException e) {
 				throw new InvocationTargetException(e);
