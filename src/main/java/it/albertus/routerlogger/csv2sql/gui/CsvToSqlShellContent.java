@@ -179,7 +179,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		createButtonBar(shell);
 	}
 
-	private void createSourceGroup(final Shell parent) {
+	private void createSourceGroup(final Composite parent) {
 		sourceGroup = new Group(parent, SWT.NONE);
 		sourceGroup.setData("lbl.csv2sql.source");
 		sourceGroup.setText(Messages.get(sourceGroup.getData().toString()));
@@ -411,7 +411,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		GridDataFactory.swtDefaults().span(2, 1).applyTo(csvResponseTimeFlag);
 	}
 
-	private void createDestinationGroup(final Shell shell) {
+	private void createDestinationGroup(final Composite shell) {
 		destinationGroup = new Group(shell, SWT.NONE);
 		destinationGroup.setData("lbl.csv2sql.destination");
 		destinationGroup.setText(Messages.get(destinationGroup.getData().toString()));
