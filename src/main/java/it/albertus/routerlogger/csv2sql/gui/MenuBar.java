@@ -143,7 +143,7 @@ public class MenuBar implements Multilanguage {
 		helpMenuHeader.setText(Messages.get(Util.isWindows() ? LBL_MENU_HEADER_HELP_WINDOWS : LBL_MENU_HEADER_HELP));
 		helpSystemInfoItem.setText(Messages.get(LBL_MENU_ITEM_SYSTEM_INFO));
 		if (helpAboutItem != null && !helpAboutItem.isDisposed()) {
-			helpAboutItem.setText(Messages.get(LBL_MENU_ITEM_ABOUT));
+			helpAboutItem.setText(Messages.get(LBL_MENU_ITEM_ABOUT, Messages.get(LBL_CSV2SQL_TITLE)));
 		}
 	}
 

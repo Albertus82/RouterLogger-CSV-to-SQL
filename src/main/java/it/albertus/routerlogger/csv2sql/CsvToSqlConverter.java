@@ -10,6 +10,7 @@ import org.eclipse.swt.widgets.Shell;
 
 import it.albertus.jface.EnhancedErrorDialog;
 import it.albertus.routerlogger.csv2sql.gui.CsvToSqlGui;
+import it.albertus.routerlogger.csv2sql.gui.CsvToSqlShellContent;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
 import it.albertus.util.Version;
 import it.albertus.util.logging.LoggerFactory;
@@ -22,7 +23,7 @@ public class CsvToSqlConverter {
 		Display display = null;
 		Shell shell = null;
 		try {
-			Display.setAppName(Messages.get("lbl.csv2sql.title"));
+			Display.setAppName(Messages.get(CsvToSqlShellContent.LBL_CSV2SQL_TITLE));
 			Display.setAppVersion(Version.getInstance().getNumber());
 			display = Display.getDefault();
 			shell = new Shell(display, SWT.RESIZE | SWT.MIN);

@@ -57,6 +57,8 @@ import it.albertus.util.logging.LoggerFactory;
 
 public class CsvToSqlShellContent implements Multilanguage {
 
+	public static final String LBL_CSV2SQL_TITLE = "lbl.csv2sql.title";
+
 	public static final byte DATABASE_COLUMN_NAME_MIN_LENGTH = 8;
 
 	public static final String TIMESTAMP_BASE_COLUMN_NAME = "timestamp";
@@ -150,7 +152,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 	/** Opens this <em>CSV to SQL converter</em> window. */
 	public void open() {
-		shell.setData("lbl.csv2sql.title");
+		shell.setData(LBL_CSV2SQL_TITLE);
 		shell.setText(Messages.get(shell.getData().toString()));
 		shell.setImages(Images.getMainIcons());
 		createContents(shell);
@@ -667,6 +669,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 	@Override
 	public void updateLabels() {
+		shell.setText(Messages.get(shell.getData().toString()));
 		sourceGroup.setText(Messages.get(sourceGroup.getData().toString()));
 		sourceFilesLabel.setText(Messages.get(sourceFilesLabel.getData().toString()));
 		deleteMenuItem.setText(Messages.get(deleteMenuItem.getData().toString()) + SwtUtils.getShortcutLabel(Messages.get(LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY)));

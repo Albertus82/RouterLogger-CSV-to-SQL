@@ -1,6 +1,9 @@
 package it.albertus.routerlogger.csv2sql.gui;
 
+import org.eclipse.swt.widgets.Display;
 import org.eclipse.swt.widgets.Shell;
+
+import it.albertus.routerlogger.csv2sql.resources.Messages;
 
 public class CsvToSqlGui extends CsvToSqlShellContent {
 
@@ -18,8 +21,10 @@ public class CsvToSqlGui extends CsvToSqlShellContent {
 
 	@Override
 	public void updateLabels() {
+		Display.setAppName(Messages.get(LBL_CSV2SQL_TITLE));
 		super.updateLabels();
 		menuBar.updateLabels();
+		getShell().layout(true,true);
 	}
 
 }
