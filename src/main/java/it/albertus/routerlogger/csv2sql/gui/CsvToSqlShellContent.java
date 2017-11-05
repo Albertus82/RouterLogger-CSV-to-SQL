@@ -6,6 +6,7 @@ import java.io.File;
 import java.lang.reflect.InvocationTargetException;
 import java.text.SimpleDateFormat;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.TreeSet;
@@ -18,6 +19,7 @@ import org.eclipse.jface.dialogs.ProgressMonitorDialog;
 import org.eclipse.jface.fieldassist.FieldDecorationRegistry;
 import org.eclipse.jface.layout.GridDataFactory;
 import org.eclipse.jface.layout.GridLayoutFactory;
+import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
 import org.eclipse.swt.events.KeyAdapter;
@@ -57,8 +59,6 @@ import it.albertus.util.logging.LoggerFactory;
 
 public class CsvToSqlShellContent implements Multilanguage {
 
-	public static final String LBL_CSV2SQL_TITLE = "lbl.csv2sql.title";
-
 	public static final byte DATABASE_COLUMN_NAME_MIN_LENGTH = 8;
 
 	public static final String TIMESTAMP_BASE_COLUMN_NAME = "timestamp";
@@ -85,6 +85,8 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private static final String DATABASE_COLUMN_NAME_PREFIX = "database.column.name.prefix";
 	private static final String DATABASE_COLUMN_NAME_MAX_LENGTH = "database.column.name.max.length";
 
+	public static final String LBL_CSV2SQL_TITLE = "lbl.csv2sql.title";
+
 	private static final String LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY = "lbl.csv2sql.source.menu.delete.key";
 
 	private static final Logger logger = LoggerFactory.getLogger(CsvToSqlShellContent.class);
@@ -93,6 +95,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 	private final Shell shell;
 
+	// Source group
 	private Group sourceGroup;
 	private Label sourceFilesLabel;
 	private List sourceFilesList;
@@ -108,6 +111,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private Text csvTimestampPatternText;
 	private Button csvResponseTimeFlag;
 
+	// Destination group
 	private Group destinationGroup;
 	private Label destinationDirectoryLabel;
 	private Text destinationDirectoryText;
@@ -119,10 +123,11 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private Label sqlMaxLengthColumnNamesLabel;
 	private Text sqlMaxLengthColumnNamesText;
 
+	// Button bar
 	private Button processButton;
 	private Button closeButton;
 
-	private final Set<Validator> validators = new HashSet<>();
+	private final Collection<Validator> validators = new HashSet<>();
 
 	private final ModifyListener textModifyListener = event -> updateProcessButtonStatus();
 
@@ -425,7 +430,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 		GridDataFactory.fillDefaults().span(2, 1).applyTo(destinationDirectoryLabel);
 
 		destinationDirectoryText = new Text(parent, SWT.BORDER);
-		destinationDirectoryText.setEditable(false);
 		destinationDirectoryText.setText(configuration.getString(DATABASE_DIRECTORY, ""));
 		destinationDirectoryText.addModifyListener(textModifyListener);
 		GridDataFactory.swtDefaults().align(SWT.FILL, SWT.CENTER).grab(true, false).applyTo(destinationDirectoryText);
@@ -576,17 +580,17 @@ public class CsvToSqlShellContent implements Multilanguage {
 			final CsvToSqlRunnable runnable = new CsvToSqlRunnable(converter, sourceFilesList.getItems(), destinationDirectoryText.getText());
 
 			ProgressMonitorDialog.setDefaultImages(shell.getImages());
-			final ProgressMonitorDialog dialog = new ProgressMonitorDialog(shell) {
+			final IRunnableContext dialog = new ProgressMonitorDialog(shell) {
 				@Override
 				protected void createCancelButton(final Composite parent) {
 					super.createCancelButton(parent);
-					cancel.setText(Messages.get("lbl.button.cancel"));
+					cancel.setText(Messages.get("lbl.button.cancel")); // Improved localization
 				}
 
 				@Override
 				protected void configureShell(final Shell shell) {
 					super.configureShell(shell);
-					shell.setText(Messages.get("lbl.csv2sql.progress.text"));
+					shell.setText(Messages.get("lbl.csv2sql.progress.text")); // Improved localization
 				}
 			};
 
