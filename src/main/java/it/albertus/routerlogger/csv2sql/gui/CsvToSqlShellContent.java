@@ -22,6 +22,7 @@ import org.eclipse.jface.layout.GridLayoutFactory;
 import org.eclipse.jface.operation.IRunnableContext;
 import org.eclipse.swt.SWT;
 import org.eclipse.swt.SWTException;
+import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.ModifyListener;
@@ -29,6 +30,7 @@ import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
 import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.graphics.Point;
+import org.eclipse.swt.layout.FillLayout;
 import org.eclipse.swt.widgets.Button;
 import org.eclipse.swt.widgets.Composite;
 import org.eclipse.swt.widgets.DirectoryDialog;
@@ -168,15 +170,24 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private void constrainShellSize(final Shell shell) {
 		shell.pack();
 		final Point minSize = shell.getSize();
-		shell.setMinimumSize(minSize);
 		shell.setSize(SwtUtils.convertHorizontalDLUsToPixels(sourceFilesList, 280), minSize.y);
 	}
 
 	protected void createContents(final Shell shell) {
-		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(shell);
-		createSourceGroup(shell);
-		createDestinationGroup(shell);
-		createButtonBar(shell);
+		shell.setLayout(new FillLayout());
+
+		final ScrolledComposite scrollable = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL);
+		final Composite composite = new Composite(scrollable, SWT.NONE);
+		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(composite);
+
+		createSourceGroup(composite);
+		createDestinationGroup(composite);
+		createButtonBar(composite);
+
+		scrollable.setContent(composite);
+		scrollable.setExpandVertical(true);
+		scrollable.setExpandHorizontal(true);
+		scrollable.setMinSize(composite.computeSize(SWT.DEFAULT, SWT.DEFAULT));
 	}
 
 	private void createSourceGroup(final Composite parent) {
@@ -511,13 +522,13 @@ public class CsvToSqlShellContent implements Multilanguage {
 		sqlMaxLengthColumnNamesText.setText(Integer.toString(configuration.getInt(DATABASE_COLUMN_NAME_MAX_LENGTH, Defaults.DATABASE_COLUMN_NAME_MAX_LENGTH)));
 	}
 
-	private void createButtonBar(final Shell shell) {
-		createProcessButton(shell);
-		createCloseButton(shell);
+	private void createButtonBar(final Composite parent) {
+		createProcessButton(parent);
+		createCloseButton(parent);
 	}
 
-	private void createProcessButton(final Shell shell) {
-		processButton = new Button(shell, SWT.PUSH);
+	private void createProcessButton(final Composite parent) {
+		processButton = new Button(parent, SWT.PUSH);
 		processButton.setEnabled(false);
 		processButton.setData("lbl.csv2sql.button.convert");
 		processButton.setText(Messages.get(processButton.getData().toString()));
@@ -526,13 +537,13 @@ public class CsvToSqlShellContent implements Multilanguage {
 		processButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				process(shell);
+				process(parent.getShell());
 			}
 		});
 	}
 
-	private void createCloseButton(final Shell shell) {
-		closeButton = new Button(shell, SWT.PUSH);
+	private void createCloseButton(final Composite parent) {
+		closeButton = new Button(parent, SWT.PUSH);
 		closeButton.setData("lbl.button.close");
 		closeButton.setText(Messages.get(closeButton.getData().toString()));
 		final int buttonWidth = SwtUtils.convertHorizontalDLUsToPixels(closeButton, IDialogConstants.BUTTON_WIDTH);
@@ -540,7 +551,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		closeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				shell.close();
+				parent.getShell().close();
 			}
 		});
 	}
