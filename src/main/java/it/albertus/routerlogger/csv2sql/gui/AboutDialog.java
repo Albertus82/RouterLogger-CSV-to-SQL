@@ -48,18 +48,22 @@ public class AboutDialog extends Dialog {
 
 		final Label icon = new Label(shell, SWT.NONE);
 		icon.setImage(Images.getMainIcons()[5]);
-		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).span(1, 2).applyTo(icon);
+		GridDataFactory.swtDefaults().align(SWT.CENTER, SWT.CENTER).span(1, 3).applyTo(icon);
 
 		final LinkSelectionListener linkSelectionListener = new LinkSelectionListener();
 
 		final Link appInfo = new Link(shell, SWT.WRAP);
-		final Version version = Version.getInstance();
-		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.CENTER).grab(false, true).applyTo(appInfo);
-		appInfo.setText(buildAnchor(Messages.get("lbl.about.app.url"), Messages.get("lbl.csv2sql.title")) + ' ' + Messages.get("lbl.about.app.version", version.getNumber(), DateFormat.getDateInstance(DateFormat.MEDIUM, Messages.getLanguage().getLocale()).format(version.getDate())));
+		GridDataFactory.swtDefaults().grab(false, true).applyTo(appInfo);
+		appInfo.setText(buildAnchor(Messages.get("lbl.about.app.url"), Messages.get("lbl.csv2sql.title")));
 		appInfo.addSelectionListener(linkSelectionListener);
 
+		final Label versionInfo = new Label(shell, SWT.WRAP);
+		GridDataFactory.swtDefaults().grab(false, true).applyTo(versionInfo);
+		final Version version = Version.getInstance();
+		versionInfo.setText(Messages.get("lbl.about.app.version", version.getNumber(), DateFormat.getDateInstance(DateFormat.LONG, Messages.getLanguage().getLocale()).format(version.getDate())));
+
 		final Link iconInfo = new Link(shell, SWT.WRAP);
-		GridDataFactory.swtDefaults().align(SWT.LEAD, SWT.TOP).grab(false, true).applyTo(iconInfo);
+		GridDataFactory.swtDefaults().grab(false, true).applyTo(iconInfo);
 		iconInfo.setText(Messages.get("lbl.about.icon", buildAnchor(Messages.get("lbl.about.icon.url"), Messages.get("lbl.about.icon.author"))));
 		iconInfo.addSelectionListener(linkSelectionListener);
 
