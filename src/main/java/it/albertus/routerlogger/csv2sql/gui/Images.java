@@ -2,25 +2,18 @@ package it.albertus.routerlogger.csv2sql.gui;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import java.util.Collection;
+import java.util.LinkedHashSet;
 
 import org.eclipse.swt.graphics.Image;
 import org.eclipse.swt.graphics.ImageData;
 import org.eclipse.swt.graphics.ImageLoader;
 import org.eclipse.swt.widgets.Display;
 
-import it.albertus.util.logging.LoggerFactory;
-
 public class Images {
 
-	private static final Logger logger = LoggerFactory.getLogger(Images.class);
-
 	// Icona principale dell'applicazione (in vari formati)
-	private static final List<Image> mainIcons = new ArrayList<>();
+	private static final Collection<Image> mainIcons = new LinkedHashSet<>();
 
 	private Images() {
 		throw new IllegalAccessError();
@@ -34,12 +27,12 @@ public class Images {
 			}
 		}
 		catch (final IOException e) {
-			logger.log(Level.SEVERE, e.toString(), e);
+			throw new IllegalStateException(e);
 		}
 	}
 
 	public static Image[] getMainIcons() {
-		return Collections.unmodifiableList(mainIcons).toArray(new Image[mainIcons.size()]);
+		return mainIcons.toArray(new Image[mainIcons.size()]);
 	}
 
 }
