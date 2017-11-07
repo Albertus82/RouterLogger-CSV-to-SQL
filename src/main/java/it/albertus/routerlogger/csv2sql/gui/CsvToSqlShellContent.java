@@ -170,13 +170,14 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private void constrainShellSize(final Shell shell) {
 		shell.pack();
 		final Point minSize = shell.getSize();
+		shell.setMinimumSize(minSize.x, shell.getMinimumSize().y);
 		shell.setSize(SwtUtils.convertHorizontalDLUsToPixels(sourceFilesList, 280), minSize.y);
 	}
 
 	protected void createContents(final Shell shell) {
 		shell.setLayout(new FillLayout());
 
-		final ScrolledComposite scrollable = new ScrolledComposite(shell, SWT.V_SCROLL | SWT.H_SCROLL);
+		final ScrolledComposite scrollable = new ScrolledComposite(shell, SWT.V_SCROLL);
 		final Composite composite = new Composite(scrollable, SWT.NONE);
 		GridLayoutFactory.swtDefaults().numColumns(2).applyTo(composite);
 
