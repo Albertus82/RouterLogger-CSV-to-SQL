@@ -1,4 +1,4 @@
-CSV to SQL Converter for RouterLogger
+CSV to SQL converter for RouterLogger
 =====================================
 
 [![Build Status](https://travis-ci.org/Albertus82/RouterLogger-CSV-to-SQL.svg?branch=master)](https://travis-ci.org/Albertus82/RouterLogger-CSV-to-SQL)
