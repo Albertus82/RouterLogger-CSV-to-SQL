@@ -1,50 +1,41 @@
 package it.albertus.routerlogger.csv2sql;
 
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
-import org.eclipse.core.runtime.IStatus;
-import org.eclipse.swt.SWT;
-import org.eclipse.swt.widgets.Display;
-import org.eclipse.swt.widgets.Shell;
-
-import it.albertus.jface.EnhancedErrorDialog;
+import it.albertus.routerlogger.csv2sql.engine.CsvToSqlConfig;
 import it.albertus.routerlogger.csv2sql.gui.CsvToSqlGui;
-import it.albertus.routerlogger.csv2sql.gui.CsvToSqlShellContent;
-import it.albertus.routerlogger.csv2sql.resources.Messages;
-import it.albertus.util.Version;
-import it.albertus.util.logging.LoggerFactory;
+import it.albertus.util.InitializationException;
+import it.albertus.util.logging.LoggingSupport;
 
 public class CsvToSqlConverter {
 
-	private static final Logger logger = LoggerFactory.getLogger(CsvToSqlConverter.class);
+	public static final String LOG_FORMAT = "%1$td/%1$tm/%1$tY %1$tH:%1$tM:%1$tS.%tL %4$s %3$s - %5$s%6$s%n";
+
+	private static InitializationException initializationException;
+
+	static {
+		if (LoggingSupport.getFormat() == null) {
+			LoggingSupport.setFormat(LOG_FORMAT);
+		}
+		try {
+			CsvToSqlConfig.getInstance();
+		}
+		catch (final InitializationException e) {
+			initializationException = e;
+		}
+		catch (final RuntimeException e) {
+			initializationException = new InitializationException(e.getMessage(), e);
+		}
+	}
+
+	private CsvToSqlConverter() {
+		throw new IllegalAccessError();
+	}
 
 	public static void main(final String... args) {
-		Display display = null;
-		Shell shell = null;
-		try {
-			Display.setAppName(Messages.get(CsvToSqlShellContent.LBL_CSV2SQL_TITLE));
-			Display.setAppVersion(Version.getInstance().getNumber());
-			display = Display.getDefault();
-			shell = new Shell(display, SWT.RESIZE | SWT.MIN);
-			new CsvToSqlGui(shell).open();
-			while (!shell.isDisposed()) {
-				if (!display.isDisposed() && !display.readAndDispatch()) {
-					display.sleep();
-				}
-			}
-		}
-		catch (final Exception e) {
-			logger.log(Level.SEVERE, e.toString(), e);
-			if (display != null && shell != null && !display.isDisposed() && !shell.isDisposed()) {
-				EnhancedErrorDialog.openError(shell, shell.getText(), e.toString(), IStatus.ERROR, e, shell.getDisplay().getSystemImage(SWT.ICON_ERROR));
-			}
-		}
-		finally {
-			if (display != null) {
-				display.dispose();
-			}
-		}
+		CsvToSqlGui.run(initializationException);
+	}
+
+	public static InitializationException getInitializationException() {
+		return initializationException;
 	}
 
 }
