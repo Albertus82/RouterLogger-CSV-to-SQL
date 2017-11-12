@@ -55,7 +55,7 @@ public class MenuBar implements Multilanguage {
 	private final MenuItem helpSystemInfoItem;
 	private MenuItem helpAboutItem;
 
-	MenuBar(final CsvToSqlGui gui) {
+	MenuBar(final Multilanguage gui) {
 		shell = gui.getShell();
 
 		final CloseListener closeListener = new CloseListener(gui);
