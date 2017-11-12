@@ -5,8 +5,8 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import org.eclipse.core.runtime.IStatus;
-import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
+import org.eclipse.swt.events.SelectionListener;
 import org.eclipse.swt.widgets.Event;
 import org.eclipse.swt.widgets.Listener;
 
@@ -19,14 +19,11 @@ import it.albertus.routerlogger.csv2sql.gui.preference.Preference;
 import it.albertus.routerlogger.csv2sql.gui.preference.page.PageDefinition;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
 import it.albertus.routerlogger.csv2sql.resources.Messages.Language;
-import it.albertus.util.Configuration;
 import it.albertus.util.logging.LoggerFactory;
 
-public class PreferencesListener extends SelectionAdapter implements Listener {
+public class PreferencesListener implements SelectionListener, Listener {
 
 	private static final Logger logger = LoggerFactory.getLogger(PreferencesListener.class);
-
-	private static final Configuration configuration = CsvToSqlConfig.getInstance();
 
 	private final Multilanguage gui;
 
@@ -34,10 +31,9 @@ public class PreferencesListener extends SelectionAdapter implements Listener {
 		this.gui = gui;
 	}
 
-	@Override
-	public void widgetSelected(final SelectionEvent se) {
+	private void execute() {
 		final Language language = Messages.getLanguage();
-		final Preferences preferences = new Preferences(PageDefinition.values(), Preference.values(), configuration, Images.getMainIcons());
+		final Preferences preferences = new Preferences(PageDefinition.values(), Preference.values(), CsvToSqlConfig.getInstance(), Images.getMainIcons());
 		try {
 			preferences.openDialog(gui.getShell());
 		}
@@ -54,7 +50,15 @@ public class PreferencesListener extends SelectionAdapter implements Listener {
 
 	@Override
 	public void handleEvent(final Event event) {
-		widgetSelected(null);
+		execute();
 	}
+
+	@Override
+	public void widgetSelected(final SelectionEvent se) {
+		execute();
+	}
+
+	@Override
+	public void widgetDefaultSelected(final SelectionEvent e) {/* Ignore */}
 
 }
