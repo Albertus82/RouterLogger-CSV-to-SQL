@@ -26,6 +26,7 @@ import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
 import org.eclipse.swt.events.MenuDetectEvent;
+import org.eclipse.swt.events.ModifyEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -131,11 +132,11 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private Button processButton;
 	private Button closeButton;
 
-	private final IGuiDirector director = new GuiDirector();
-
 	private final Collection<Validator> validators = new HashSet<>();
 
-	private final ModifyListener textModifyListener = event -> updateProcessButtonStatus();
+	private final IGuiDirector director = new GuiDirector();
+
+	private final ModifyListener textModifyListener = director::textModified;
 
 	/**
 	 * Constructs a new instance of the <em>CSV to SQL converter</em> window,
@@ -529,21 +530,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 		});
 	}
 
-	private void updateProcessButtonStatus() {
-		if (processButton != null && !processButton.isDisposed()) {
-			processButton.setEnabled(isValid());
-		}
-	}
-
-	private boolean isValid() {
-		for (final Validator validator : validators) {
-			if (!validator.isValid()) {
-				return false;
-			}
-		}
-		return true;
-	}
-
 	@Override
 	public void updateLabels() {
 		shell.setText(Messages.get(shell.getData().toString()));
@@ -711,6 +697,26 @@ public class CsvToSqlShellContent implements Multilanguage {
 				removeSourceFileButton.setEnabled(false);
 				updateProcessButtonStatus();
 			}
+		}
+
+		@Override
+		public void textModified(final ModifyEvent e) {
+			updateProcessButtonStatus();
+		}
+
+		private void updateProcessButtonStatus() {
+			if (processButton != null && !processButton.isDisposed()) {
+				processButton.setEnabled(isValid());
+			}
+		}
+
+		private boolean isValid() {
+			for (final Validator validator : validators) {
+				if (!validator.isValid()) {
+					return false;
+				}
+			}
+			return true;
 		}
 
 		/**
