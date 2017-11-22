@@ -221,13 +221,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		createSourceRemoveButton(parent);
 		createSourceClearButton(parent);
 
-		final ControlValidator<List> validator = new ControlValidator<List>(sourceFilesList) {
-			@Override
-			public boolean isValid() {
-				return sourceFilesList != null && !sourceFilesList.isDisposed() && sourceFilesList.getItemCount() > 0;
-			}
-		};
-		validators.add(validator);
+		validators.add(() -> sourceFilesList != null && !sourceFilesList.isDisposed() && sourceFilesList.getItemCount() > 0);
 
 		sourceFilesList.addKeyListener(new KeyAdapter() {
 			@Override
