@@ -7,9 +7,9 @@ import org.eclipse.swt.events.SelectionEvent;
 
 interface IGuiDirector {
 
-	void sourceFileListKeyPressed(KeyEvent e);
+	void sourceFilesListKeyPressed(KeyEvent e);
 
-	void sourceFileListSelected(SelectionEvent e);
+	void sourceFilesListSelected(SelectionEvent e);
 
 	void addSourceFilesButtonSelected(SelectionEvent e);
 
@@ -17,7 +17,7 @@ interface IGuiDirector {
 
 	void clearSourceFilesButtonSelected(SelectionEvent e);
 
-	void sourceFileListContextMenuDetected(MenuDetectEvent e);
+	void sourceFilesListContextMenuDetected(MenuDetectEvent e);
 
 	void removeSourceFilesMenuItemSelected(SelectionEvent e);
 

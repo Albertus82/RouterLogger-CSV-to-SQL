@@ -104,7 +104,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private Label sourceFilesLabel;
 	private List sourceFilesList;
 	private Menu contextMenu;
-	private MenuItem deleteMenuItem;
+	private MenuItem removeMenuItem;
 	private MenuItem selectAllMenuItem;
 	private MenuItem clearMenuItem;
 	private Button addSourceFileButton;
@@ -232,19 +232,19 @@ public class CsvToSqlShellContent implements Multilanguage {
 		sourceFilesList.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
-				director.sourceFileListKeyPressed(e);
+				director.sourceFilesListKeyPressed(e);
 			}
 		});
 
 		sourceFilesList.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				director.sourceFileListSelected(e);
+				director.sourceFilesListSelected(e);
 			}
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				director.sourceFileListSelected(e);
+				director.sourceFilesListSelected(e);
 			}
 		});
 
@@ -302,11 +302,11 @@ public class CsvToSqlShellContent implements Multilanguage {
 		contextMenu = new Menu(sourceFilesList);
 
 		// Remove...
-		deleteMenuItem = new MenuItem(contextMenu, SWT.PUSH);
-		deleteMenuItem.setData("lbl.csv2sql.source.remove");
-		deleteMenuItem.setText(Messages.get(deleteMenuItem.getData().toString()) + SwtUtils.getShortcutLabel(Messages.get(LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY)));
-		deleteMenuItem.setAccelerator(SwtUtils.KEY_DELETE); // dummy
-		deleteMenuItem.addSelectionListener(new SelectionAdapter() {
+		removeMenuItem = new MenuItem(contextMenu, SWT.PUSH);
+		removeMenuItem.setData("lbl.csv2sql.source.remove");
+		removeMenuItem.setText(Messages.get(removeMenuItem.getData().toString()) + SwtUtils.getShortcutLabel(Messages.get(LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY)));
+		removeMenuItem.setAccelerator(SwtUtils.KEY_DELETE); // dummy
+		removeMenuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
 				director.removeSourceFilesMenuItemSelected(e);
@@ -340,7 +340,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 			}
 		});
 
-		sourceFilesList.addMenuDetectListener(director::sourceFileListContextMenuDetected);
+		sourceFilesList.addMenuDetectListener(director::sourceFilesListContextMenuDetected);
 	}
 
 	private void createCsvSeparatorField(final Composite parent) {
@@ -535,7 +535,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		shell.setText(Messages.get(shell.getData().toString()));
 		sourceGroup.setText(Messages.get(sourceGroup.getData().toString()));
 		sourceFilesLabel.setText(Messages.get(sourceFilesLabel.getData().toString()));
-		deleteMenuItem.setText(Messages.get(deleteMenuItem.getData().toString()) + SwtUtils.getShortcutLabel(Messages.get(LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY)));
+		removeMenuItem.setText(Messages.get(removeMenuItem.getData().toString()) + SwtUtils.getShortcutLabel(Messages.get(LBL_CSV2SQL_SOURCE_MENU_DELETE_KEY)));
 		selectAllMenuItem.setText(Messages.get(selectAllMenuItem.getData().toString()) + SwtUtils.getMod1ShortcutLabel(SwtUtils.KEY_SELECT_ALL));
 		clearMenuItem.setText(Messages.get(clearMenuItem.getData().toString()));
 		addSourceFileButton.setText(Messages.get(addSourceFileButton.getData().toString()));
@@ -560,7 +560,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private class GuiDirector implements IGuiDirector {
 
 		@Override
-		public void sourceFileListKeyPressed(final KeyEvent e) {
+		public void sourceFilesListKeyPressed(final KeyEvent e) {
 			if (e != null) {
 				if (SWT.NONE == e.stateMask && SwtUtils.KEY_DELETE == e.keyCode && sourceFilesList.getSelectionCount() > 0) {
 					removeSelectedItemsFromList();
@@ -572,7 +572,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		}
 
 		@Override
-		public void sourceFileListSelected(final SelectionEvent e) {
+		public void sourceFilesListSelected(final SelectionEvent e) {
 			if (sourceFilesList.getSelectionCount() > 0) {
 				removeSourceFileButton.setEnabled(true);
 			}
@@ -609,8 +609,8 @@ public class CsvToSqlShellContent implements Multilanguage {
 		}
 
 		@Override
-		public void sourceFileListContextMenuDetected(final MenuDetectEvent e) {
-			deleteMenuItem.setEnabled(sourceFilesList.getSelectionCount() > 0);
+		public void sourceFilesListContextMenuDetected(final MenuDetectEvent e) {
+			removeMenuItem.setEnabled(sourceFilesList.getSelectionCount() > 0);
 			selectAllMenuItem.setEnabled(sourceFilesList.getItemCount() > 0);
 			clearMenuItem.setEnabled(sourceFilesList.getItemCount() > 0);
 			contextMenu.setVisible(true);
@@ -647,6 +647,11 @@ public class CsvToSqlShellContent implements Multilanguage {
 		@Override
 		public void closeButtonSelected(final SelectionEvent e) {
 			shell.close();
+		}
+
+		@Override
+		public void textModified(final ModifyEvent e) {
+			updateProcessButtonStatus();
 		}
 
 		/**
@@ -697,11 +702,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 				removeSourceFileButton.setEnabled(false);
 				updateProcessButtonStatus();
 			}
-		}
-
-		@Override
-		public void textModified(final ModifyEvent e) {
-			updateProcessButtonStatus();
 		}
 
 		private void updateProcessButtonStatus() {
