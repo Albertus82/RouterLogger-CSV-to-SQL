@@ -25,6 +25,7 @@ import org.eclipse.swt.SWTException;
 import org.eclipse.swt.custom.ScrolledComposite;
 import org.eclipse.swt.events.KeyAdapter;
 import org.eclipse.swt.events.KeyEvent;
+import org.eclipse.swt.events.MenuDetectEvent;
 import org.eclipse.swt.events.ModifyListener;
 import org.eclipse.swt.events.SelectionAdapter;
 import org.eclipse.swt.events.SelectionEvent;
@@ -101,6 +102,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 	private Group sourceGroup;
 	private Label sourceFilesLabel;
 	private List sourceFilesList;
+	private Menu contextMenu;
 	private MenuItem deleteMenuItem;
 	private MenuItem selectAllMenuItem;
 	private MenuItem clearMenuItem;
@@ -128,6 +130,8 @@ public class CsvToSqlShellContent implements Multilanguage {
 	// Button bar
 	private Button processButton;
 	private Button closeButton;
+
+	private final IGuiDirector director = new GuiDirector();
 
 	private final Collection<Validator> validators = new HashSet<>();
 
@@ -227,31 +231,19 @@ public class CsvToSqlShellContent implements Multilanguage {
 		sourceFilesList.addKeyListener(new KeyAdapter() {
 			@Override
 			public void keyPressed(final KeyEvent e) {
-				if (e != null) {
-					if (SWT.NONE == e.stateMask && SwtUtils.KEY_DELETE == e.keyCode && sourceFilesList.getSelectionCount() > 0) {
-						removeSelectedItemsFromList();
-					}
-					else if (SWT.MOD1 == e.stateMask && SwtUtils.KEY_SELECT_ALL == e.keyCode) {
-						sourceFilesList.selectAll();
-					}
-				}
+				director.sourceFileListKeyPressed(e);
 			}
 		});
 
 		sourceFilesList.addSelectionListener(new SelectionListener() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				if (sourceFilesList.getSelectionCount() > 0) {
-					removeSourceFileButton.setEnabled(true);
-				}
-				else {
-					removeSourceFileButton.setEnabled(false);
-				}
+				director.sourceFileListSelected(e);
 			}
 
 			@Override
 			public void widgetDefaultSelected(final SelectionEvent e) {
-				widgetSelected(e);
+				director.sourceFileListSelected(e);
 			}
 		});
 
@@ -268,19 +260,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		addSourceFileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final Set<String> files = selectSourceFiles(parent.getShell());
-				if (!files.isEmpty()) {
-					files.addAll(Arrays.asList(sourceFilesList.getItems())); // merge
-					sourceFilesList.setItems(files.toArray(new String[files.size()]));
-					if (sourceFilesList.getItemCount() > 0) {
-						clearSourceFilesButton.setEnabled(true);
-					}
-					if (destinationDirectoryText != null && !destinationDirectoryText.isDisposed() && (destinationDirectoryText.getCharCount() == 0 || !new File(destinationDirectoryText.getText()).isDirectory()) && sourceFilesList.getItemCount() > 0) {
-						final String lastItem = sourceFilesList.getItem(sourceFilesList.getItemCount() - 1);
-						destinationDirectoryText.setText(new File(lastItem).getParent());
-					}
-				}
-				updateProcessButtonStatus();
+				director.addSourceFilesButtonSelected(e);
 			}
 		});
 	}
@@ -296,7 +276,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		removeSourceFileButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				removeSelectedItemsFromList();
+				director.removeSourceFilesButtonSelected(e);
 			}
 		});
 	}
@@ -312,13 +292,13 @@ public class CsvToSqlShellContent implements Multilanguage {
 		clearSourceFilesButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				removeAllItemsFromList();
+				director.clearSourceFilesButtonSelected(e);
 			}
 		});
 	}
 
 	private void createSourceFilesListMenu(final List sourceFilesList) {
-		final Menu contextMenu = new Menu(sourceFilesList);
+		contextMenu = new Menu(sourceFilesList);
 
 		// Remove...
 		deleteMenuItem = new MenuItem(contextMenu, SWT.PUSH);
@@ -328,7 +308,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		deleteMenuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				removeSelectedItemsFromList();
+				director.removeSourceFilesMenuItemSelected(e);
 			}
 		});
 
@@ -342,7 +322,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		selectAllMenuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				sourceFilesList.selectAll();
+				director.selectAllSourceFilesMenuItemSelected(e);
 			}
 		});
 
@@ -355,16 +335,11 @@ public class CsvToSqlShellContent implements Multilanguage {
 		clearMenuItem.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				removeAllItemsFromList();
+				director.clearSourceFilesMenuItemSelected(e);
 			}
 		});
 
-		sourceFilesList.addMenuDetectListener(event -> {
-			deleteMenuItem.setEnabled(sourceFilesList.getSelectionCount() > 0);
-			selectAllMenuItem.setEnabled(sourceFilesList.getItemCount() > 0);
-			clearMenuItem.setEnabled(sourceFilesList.getItemCount() > 0);
-			contextMenu.setVisible(true);
-		});
+		sourceFilesList.addMenuDetectListener(director::sourceFileListContextMenuDetected);
 	}
 
 	private void createCsvSeparatorField(final Composite parent) {
@@ -463,10 +438,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		browseDirectoryButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				final String dir = selectDestinationPath(parent.getShell());
-				if (dir != null) {
-					destinationDirectoryText.setText(dir);
-				}
+				director.browseDirectoryButtonSelected(e);
 			}
 		});
 	}
@@ -538,7 +510,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		processButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				process(parent.getShell());
+				director.processButtonSelected(e);
 			}
 		});
 	}
@@ -552,7 +524,7 @@ public class CsvToSqlShellContent implements Multilanguage {
 		closeButton.addSelectionListener(new SelectionAdapter() {
 			@Override
 			public void widgetSelected(final SelectionEvent e) {
-				parent.getShell().close();
+				director.closeButtonSelected(e);
 			}
 		});
 	}
@@ -570,117 +542,6 @@ public class CsvToSqlShellContent implements Multilanguage {
 			}
 		}
 		return true;
-	}
-
-	/**
-	 * Converts the selected CSV files to SQL scripts.
-	 * 
-	 * @param shell the parent shell, needed to open the progress monitor dialog
-	 */
-	private void process(final Shell shell) {
-		try {
-			final String sqlTableName = sqlTableNameText.getText().trim();
-			final String sqlColumnNamesPrefix = sqlColumnNamesPrefixText.getText().trim();
-			final String sqlTimestampColumnName = TIMESTAMP_BASE_COLUMN_NAME;
-			final String sqlResponseTimeColumnName = csvResponseTimeFlag.getSelection() ? RESPONSE_TIME_BASE_COLUMN_NAME : null;
-			final int sqlMaxLengthColumnNames = Integer.parseInt(sqlMaxLengthColumnNamesText.getText().trim());
-			final String csvSeparator = csvSeparatorText.getText();
-			final String csvTimestampPattern = csvTimestampPatternText.getText().trim();
-
-			final CsvToSqlEngine converter = new CsvToSqlEngine(csvSeparator, csvTimestampPattern, sqlTableName, sqlColumnNamesPrefix, sqlTimestampColumnName, sqlResponseTimeColumnName, sqlMaxLengthColumnNames);
-
-			final CsvToSqlRunnable runnable = new CsvToSqlRunnable(converter, sourceFilesList.getItems(), destinationDirectoryText.getText().trim());
-
-			ProgressMonitorDialog.setDefaultImages(shell.getImages());
-			final IRunnableContext dialog = new ProgressMonitorDialog(shell) {
-				@Override
-				protected void createCancelButton(final Composite parent) {
-					super.createCancelButton(parent);
-					cancel.setText(Messages.get("lbl.button.cancel")); // Improved localization
-				}
-
-				@Override
-				protected void configureShell(final Shell shell) {
-					super.configureShell(shell);
-					shell.setText(Messages.get("lbl.csv2sql.progress.text")); // Improved localization
-				}
-			};
-
-			dialog.run(true, true, runnable);
-
-			final MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION);
-			box.setText(shell.getText());
-			box.setMessage(Messages.get("msg.csv2sql.dialog.result.message.success"));
-			box.open();
-		}
-		catch (final InvocationTargetException e) {
-			final String message = Messages.get("err.csv2sql.invocationTargetException");
-			logger.log(Level.WARNING, message, e);
-			EnhancedErrorDialog.openError(shell, shell.getText(), message, IStatus.WARNING, e.getCause() != null ? e.getCause() : e, shell.getDisplay().getSystemImage(SWT.ICON_WARNING));
-		}
-		catch (final InterruptedException e) {
-			Thread.currentThread().interrupt();
-			logger.log(Level.FINE, e.toString(), e);
-			final MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION);
-			box.setText(shell.getText());
-			box.setMessage(Messages.get("msg.csv2sql.dialog.result.message.cancelled"));
-			box.open();
-		}
-		catch (final Exception e) {
-			final String message = Messages.get("err.csv2sql.exception");
-			logger.log(Level.SEVERE, message, e);
-			EnhancedErrorDialog.openError(shell, shell.getText(), message, IStatus.ERROR, e, shell.getDisplay().getSystemImage(SWT.ICON_ERROR));
-		}
-	}
-
-	/**
-	 * Opens the file dialog to set the source files.
-	 * 
-	 * @param parent the parent shell
-	 * @return the selected file names
-	 */
-	private Set<String> selectSourceFiles(final Shell parent) {
-		final FileDialog openDialog = new FileDialog(parent, SWT.OPEN | SWT.MULTI);
-		openDialog.setFilterExtensions(new String[] { "*.CSV;*.csv" });
-		openDialog.open();
-		final Set<String> fileNames = new TreeSet<>();
-		for (final String fileName : openDialog.getFileNames()) {
-			fileNames.add(openDialog.getFilterPath() + File.separator + fileName);
-		}
-		return fileNames;
-	}
-
-	/**
-	 * Opens the directory dialog to set destination directory.
-	 * 
-	 * @param parent the parent shell
-	 * @return the selected directory
-	 */
-	private String selectDestinationPath(final Shell parent) {
-		final DirectoryDialog saveDialog = new DirectoryDialog(parent, SWT.NONE);
-		saveDialog.setText(Messages.get("lbl.csv2sql.destination.dialog.text"));
-		saveDialog.setMessage(Messages.get("lbl.csv2sql.destination.dialog.message"));
-		return saveDialog.open();
-	}
-
-	private void removeSelectedItemsFromList() {
-		removeSourceFileButton.setEnabled(false);
-		if (sourceFilesList.getSelectionCount() > 0) {
-			sourceFilesList.remove(sourceFilesList.getSelectionIndices());
-			if (sourceFilesList.getItemCount() == 0) {
-				clearSourceFilesButton.setEnabled(false);
-			}
-			updateProcessButtonStatus();
-		}
-	}
-
-	private void removeAllItemsFromList() {
-		clearSourceFilesButton.setEnabled(false);
-		if (sourceFilesList.getItemCount() > 0) {
-			sourceFilesList.removeAll();
-			removeSourceFileButton.setEnabled(false);
-			updateProcessButtonStatus();
-		}
 	}
 
 	@Override
@@ -707,6 +568,212 @@ public class CsvToSqlShellContent implements Multilanguage {
 
 		processButton.setText(Messages.get(processButton.getData().toString()));
 		closeButton.setText(Messages.get(closeButton.getData().toString()));
+	}
+
+	/* Mediator */
+	private class GuiDirector implements IGuiDirector {
+
+		@Override
+		public void sourceFileListKeyPressed(final KeyEvent e) {
+			if (e != null) {
+				if (SWT.NONE == e.stateMask && SwtUtils.KEY_DELETE == e.keyCode && sourceFilesList.getSelectionCount() > 0) {
+					removeSelectedItemsFromList();
+				}
+				else if (SWT.MOD1 == e.stateMask && SwtUtils.KEY_SELECT_ALL == e.keyCode) {
+					sourceFilesList.selectAll();
+				}
+			}
+		}
+
+		@Override
+		public void sourceFileListSelected(final SelectionEvent e) {
+			if (sourceFilesList.getSelectionCount() > 0) {
+				removeSourceFileButton.setEnabled(true);
+			}
+			else {
+				removeSourceFileButton.setEnabled(false);
+			}
+		}
+
+		@Override
+		public void addSourceFilesButtonSelected(final SelectionEvent e) {
+			final Set<String> files = selectSourceFiles(shell);
+			if (!files.isEmpty()) {
+				files.addAll(Arrays.asList(sourceFilesList.getItems())); // merge
+				sourceFilesList.setItems(files.toArray(new String[files.size()]));
+				if (sourceFilesList.getItemCount() > 0) {
+					clearSourceFilesButton.setEnabled(true);
+				}
+				if (destinationDirectoryText != null && !destinationDirectoryText.isDisposed() && (destinationDirectoryText.getCharCount() == 0 || !new File(destinationDirectoryText.getText()).isDirectory()) && sourceFilesList.getItemCount() > 0) {
+					final String lastItem = sourceFilesList.getItem(sourceFilesList.getItemCount() - 1);
+					destinationDirectoryText.setText(new File(lastItem).getParent());
+				}
+			}
+			updateProcessButtonStatus();
+		}
+
+		@Override
+		public void removeSourceFilesButtonSelected(final SelectionEvent e) {
+			removeSelectedItemsFromList();
+		}
+
+		@Override
+		public void clearSourceFilesButtonSelected(final SelectionEvent e) {
+			removeAllItemsFromList();
+		}
+
+		@Override
+		public void sourceFileListContextMenuDetected(final MenuDetectEvent e) {
+			deleteMenuItem.setEnabled(sourceFilesList.getSelectionCount() > 0);
+			selectAllMenuItem.setEnabled(sourceFilesList.getItemCount() > 0);
+			clearMenuItem.setEnabled(sourceFilesList.getItemCount() > 0);
+			contextMenu.setVisible(true);
+		}
+
+		@Override
+		public void removeSourceFilesMenuItemSelected(SelectionEvent e) {
+			removeSelectedItemsFromList();
+		}
+
+		@Override
+		public void selectAllSourceFilesMenuItemSelected(SelectionEvent e) {
+			sourceFilesList.selectAll();
+		}
+
+		@Override
+		public void clearSourceFilesMenuItemSelected(SelectionEvent e) {
+			removeAllItemsFromList();
+		}
+
+		@Override
+		public void browseDirectoryButtonSelected(final SelectionEvent e) {
+			final String dir = selectDestinationPath(shell);
+			if (dir != null) {
+				destinationDirectoryText.setText(dir);
+			}
+		}
+
+		@Override
+		public void processButtonSelected(final SelectionEvent e) {
+			process(shell);
+		}
+
+		@Override
+		public void closeButtonSelected(final SelectionEvent e) {
+			shell.close();
+		}
+
+		/**
+		 * Opens the file dialog to set the source files.
+		 * 
+		 * @param parent the parent shell
+		 * @return the selected file names
+		 */
+		private Set<String> selectSourceFiles(final Shell parent) {
+			final FileDialog openDialog = new FileDialog(parent, SWT.OPEN | SWT.MULTI);
+			openDialog.setFilterExtensions(new String[] { "*.CSV;*.csv" });
+			openDialog.open();
+			final Set<String> fileNames = new TreeSet<>();
+			for (final String fileName : openDialog.getFileNames()) {
+				fileNames.add(openDialog.getFilterPath() + File.separator + fileName);
+			}
+			return fileNames;
+		}
+
+		/**
+		 * Opens the directory dialog to set destination directory.
+		 * 
+		 * @param parent the parent shell
+		 * @return the selected directory
+		 */
+		private String selectDestinationPath(final Shell parent) {
+			final DirectoryDialog saveDialog = new DirectoryDialog(parent, SWT.NONE);
+			saveDialog.setText(Messages.get("lbl.csv2sql.destination.dialog.text"));
+			saveDialog.setMessage(Messages.get("lbl.csv2sql.destination.dialog.message"));
+			return saveDialog.open();
+		}
+
+		private void removeSelectedItemsFromList() {
+			removeSourceFileButton.setEnabled(false);
+			if (sourceFilesList.getSelectionCount() > 0) {
+				sourceFilesList.remove(sourceFilesList.getSelectionIndices());
+				if (sourceFilesList.getItemCount() == 0) {
+					clearSourceFilesButton.setEnabled(false);
+				}
+				updateProcessButtonStatus();
+			}
+		}
+
+		private void removeAllItemsFromList() {
+			clearSourceFilesButton.setEnabled(false);
+			if (sourceFilesList.getItemCount() > 0) {
+				sourceFilesList.removeAll();
+				removeSourceFileButton.setEnabled(false);
+				updateProcessButtonStatus();
+			}
+		}
+
+		/**
+		 * Converts the selected CSV files to SQL scripts.
+		 * 
+		 * @param shell the parent shell, needed to open the progress monitor
+		 *        dialog
+		 */
+		private void process(final Shell shell) {
+			try {
+				final String sqlTableName = sqlTableNameText.getText().trim();
+				final String sqlColumnNamesPrefix = sqlColumnNamesPrefixText.getText().trim();
+				final String sqlTimestampColumnName = TIMESTAMP_BASE_COLUMN_NAME;
+				final String sqlResponseTimeColumnName = csvResponseTimeFlag.getSelection() ? RESPONSE_TIME_BASE_COLUMN_NAME : null;
+				final int sqlMaxLengthColumnNames = Integer.parseInt(sqlMaxLengthColumnNamesText.getText().trim());
+				final String csvSeparator = csvSeparatorText.getText();
+				final String csvTimestampPattern = csvTimestampPatternText.getText().trim();
+
+				final CsvToSqlEngine converter = new CsvToSqlEngine(csvSeparator, csvTimestampPattern, sqlTableName, sqlColumnNamesPrefix, sqlTimestampColumnName, sqlResponseTimeColumnName, sqlMaxLengthColumnNames);
+
+				final CsvToSqlRunnable runnable = new CsvToSqlRunnable(converter, sourceFilesList.getItems(), destinationDirectoryText.getText().trim());
+
+				ProgressMonitorDialog.setDefaultImages(shell.getImages());
+				final IRunnableContext dialog = new ProgressMonitorDialog(shell) {
+					@Override
+					protected void createCancelButton(final Composite parent) {
+						super.createCancelButton(parent);
+						cancel.setText(Messages.get("lbl.button.cancel")); // Improved localization
+					}
+
+					@Override
+					protected void configureShell(final Shell shell) {
+						super.configureShell(shell);
+						shell.setText(Messages.get("lbl.csv2sql.progress.text")); // Improved localization
+					}
+				};
+
+				dialog.run(true, true, runnable);
+
+				final MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION);
+				box.setText(shell.getText());
+				box.setMessage(Messages.get("msg.csv2sql.dialog.result.message.success"));
+				box.open();
+			}
+			catch (final InvocationTargetException e) {
+				final String message = Messages.get("err.csv2sql.invocationTargetException");
+				logger.log(Level.WARNING, message, e);
+				EnhancedErrorDialog.openError(shell, shell.getText(), message, IStatus.WARNING, e.getCause() != null ? e.getCause() : e, shell.getDisplay().getSystemImage(SWT.ICON_WARNING));
+			}
+			catch (final InterruptedException e) {
+				Thread.currentThread().interrupt();
+				logger.log(Level.FINE, e.toString(), e);
+				final MessageBox box = new MessageBox(shell, SWT.ICON_INFORMATION);
+				box.setText(shell.getText());
+				box.setMessage(Messages.get("msg.csv2sql.dialog.result.message.cancelled"));
+				box.open();
+			}
+			catch (final Exception e) {
+				final String message = Messages.get("err.csv2sql.exception");
+				logger.log(Level.SEVERE, message, e);
+				EnhancedErrorDialog.openError(shell, shell.getText(), message, IStatus.ERROR, e, shell.getDisplay().getSystemImage(SWT.ICON_ERROR));
+			}
+		}
 	}
 
 }
