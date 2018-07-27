@@ -58,7 +58,7 @@ import it.albertus.jface.validation.Validator;
 import it.albertus.routerlogger.csv2sql.engine.CsvToSqlConfig;
 import it.albertus.routerlogger.csv2sql.engine.CsvToSqlEngine;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
-import it.albertus.util.Configuration;
+import it.albertus.util.config.Configuration;
 import it.albertus.util.logging.LoggerFactory;
 
 public class CsvToSqlShellContent implements Multilanguage {

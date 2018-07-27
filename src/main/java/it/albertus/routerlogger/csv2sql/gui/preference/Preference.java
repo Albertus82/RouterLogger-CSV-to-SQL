@@ -27,7 +27,7 @@ import it.albertus.routerlogger.csv2sql.engine.CsvToSqlConfig;
 import it.albertus.routerlogger.csv2sql.gui.CsvToSqlShellContent;
 import it.albertus.routerlogger.csv2sql.gui.preference.page.GeneralPreferencePage;
 import it.albertus.routerlogger.csv2sql.resources.Messages;
-import it.albertus.util.LoggingConfig;
+import it.albertus.util.config.LoggingConfig;
 
 public enum Preference implements IPreference {
 
