@@ -9,13 +9,17 @@ env:
 matrix:
   include:
     - os: linux
-      jdk: oraclejdk9
+      jdk: oraclejdk11
       env:
         - secure: "V0SSFUp3YQ6T0cjAaPo2WbhpuUkXc37tPQ+/teJl8LiVemSC/wFYopeowrejgi1MtZz+oquJ53+dbCELiM2SrSMxeZAL3mfI8pXc+1oRMv1/FkkvQzDArnrWTbYjssiXlgvoCi6R4Fx9ca4F8qSclIElepuIqSIQ55OEvs5Tw0xfRFKQ2SkdAJaglQs11A06Ycoi29+NfhZiO9BM7LDGLL6vW8LECIym11KuXpGlZhE8CNPqDnO/6HUmcaY7s/PWjpgBIbPWcZ6JWLKZFVhQT6p8RIAM36P2Tux1frKTRK/rVHeknQoQ0vNYF+zVTo0fh716QYfBqfJPpDas2wQIHggWSeoTrjMfzFu+lg7ltLIiVnpbr/4VeB3jwsgEroin0C/kvtXh1dEGyCGxh/57vHtuagMZhPoIMrNvqqB8Q43/H3MMeol05bV5w9twr7AvK+bfwQkqSflErUmzehZKa4FR04K+oPEaFIlutsqhf0ZvvhDDLIIi1dJeKWOlJTX/tv4fNLmbysnM7DwbAPtosYhhDHqIqTGgux1FqNyr1Z28p0SHWJwdJQVS9IQ2BWnMRLwaj+8mWzWg0SVmMkDwLmUa1o0YHf+VhhqelHMjnJEYXF7S5n8NRw1DxKTPQv2WlRFEr1rmxuTIXZiJ8oMD7q/bbkQY9eEXQsENC2CYuK4="
+      git:
+        depth: false
       after_success:
         - sonar-scanner -Dsonar.login=$SONAR_TOKEN
     - os: linux
       jdk: oraclejdk8
+    - os: linux
+      jdk: openjdk8      
     - os: osx
       before_install:
         - brew update
@@ -27,7 +31,7 @@ addons:
   apt:
     sources:
       - sourceline: 'deb https://dl.winehq.org/wine-builds/ubuntu/ trusty main'
-        key_url: https://dl.winehq.org/wine-builds/Release.key
+        key_url: https://dl.winehq.org/wine-builds/winehq.key
     packages:
       - ant-optional
       - lib32ncurses5
